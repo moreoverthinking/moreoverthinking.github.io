@@ -9,9 +9,8 @@
     /*#62aca5*/
     body {
       background-color: #0e1111;
-      height: 2000px;
+      /*height: 2000px;*/
     }
-
     #titleHeading {
       color: #F3F3F3;
       text-align: center;
@@ -19,7 +18,6 @@
       margin-bottom: 0px;
       text-shadow: 2px 2px 4px Turquoise;
       white-space: nowrap;
-      font-size: 2.5em;
     }
     hr {
       background-color: #F3F3F3;
@@ -37,7 +35,6 @@
         position: relative;
         left: 10%;
         width: 80%;
-        font-size: 1.2em;
     }
     #backcanvas {
       position: fixed;
@@ -52,119 +49,9 @@
     <p id="titleSubHeading">Tranquil Indolence of the Heart</p>
     <hr>
 
-
+    
 
     <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
-    <script>
-      var canvas = document.getElementById("backcanvas");
-      var ctx =canvas.getContext("2d");
-      var boxes = document.getElementsByClassName("box");
-      var last_known_scroll_position = 0;
-      var ticking = false;
-      initialize();
-
-      function initialize() {
-        window.addEventListener('resize', function(){updatePage();resizeCanvas();}, false);
-        window.addEventListener('scroll', updatePage);
-        resizeCanvas();
-        updatePage();
-      }
-
-      function cubeTop(x,y,bw,bh,fx,fy,w,h) {
-        ctx.fillStyle = '#f0ede6';
-        ctx.beginPath();
-        ctx.moveTo(x+w,y);
-        ctx.lineTo(x,y);
-        ctx.lineTo(x+fx,y+fy);
-        ctx.lineTo(x+fx+bw,y+fy);
-        ctx.closePath();
-        ctx.fill();
-      }
-      function cubeRight(x,y,bw,bh,fx,fy,w,h) {
-        ctx.fillStyle = '#8c8a84';
-        ctx.beginPath();
-        ctx.moveTo(x+w,y+h);
-        ctx.lineTo(x+w,y);
-        ctx.lineTo(x+fx+bw,y+fy);
-        ctx.lineTo(x+fx+bw,y+fy+bh);
-        ctx.closePath();
-        ctx.fill();
-      }
-      function cubeBottom(x,y,bw,bh,fx,fy,w,h) {
-        ctx.fillStyle = '#f0ede6';
-        ctx.beginPath();
-        ctx.moveTo(x+w,y+h);
-        ctx.lineTo(x,y+h);
-        ctx.lineTo(x+fx,y+bh+fy);
-        ctx.lineTo(x+fx+bw,y+bh+fy);
-        ctx.closePath();
-        ctx.fill();
-      }
-      function cubeLeft(x,y,bw,bh,fx,fy,w,h) {
-        ctx.fillStyle = '#8c8a84';
-        ctx.beginPath();
-        ctx.moveTo(x,y+h);
-        ctx.lineTo(x,y);
-        ctx.lineTo(x+fx,y+fy);
-        ctx.lineTo(x+fx,y+fy+bh);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      function drawCube(x,y,w,h,l,vpx,vpy) {
-        let dy = vpy - y;
-        let dx = vpx - x;
-        let bw = w*l;
-        let bh = h*l;
-        let fy = dy - l*dy;
-        let fx = dx - l*dx;
-
-        if (x < vpx-w) {
-          cubeTop(x,y,bw,bh,fx,fy,w,h);
-          cubeBottom(x,y,bw,bh,fx,fy,w,h);
-          cubeRight(x,y,bw,bh,fx,fy,w,h);
-        }
-        else if (x > vpx) {
-          cubeBottom(x,y,bw,bh,fx,fy,w,h);
-          cubeTop(x,y,bw,bh,fx,fy,w,h);
-          cubeLeft(x,y,bw,bh,fx,fy,w,h);
-        }
-        else {
-          cubeTop(x,y,bw,bh,fx,fy,w,h);
-          cubeBottom(x,y,bw,bh,fx,fy,w,h);
-        }
-
-        ctx.fillStyle = '#b5b3ac';
-        ctx.fillRect(x, y, w, h);
-      }
-
-      function draw(scroll_pos) {
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        ctx.clearRect(0,0,width,height);
-
-        for (let i = 0; i < boxes.length; i++) {
-          var rect = boxes[i].getBoundingClientRect();
-          drawCube(rect.left,rect.top,boxes[i].offsetWidth,boxes[i].offsetHeight,0.9,width/2,height/2);
-        }
-      }
-
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-
-      function updatePage() {
-        last_known_scroll_position = window.scrollY;
-        if (!ticking) {
-          window.requestAnimationFrame(function() {
-            draw(last_known_scroll_position);
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }
-
-    </script>
+    <script src="effect3D.js"></script>
   </body>
 </html>
