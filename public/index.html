@@ -8,8 +8,7 @@
     <style>
     /*#62aca5*/
     body {
-      background-color: #0e1111;
-      /*height: 2000px;*/
+      background-color: #040707;
     }
     #titleHeading {
       color: #F3F3F3;
@@ -18,12 +17,6 @@
       margin-bottom: 0px;
       text-shadow: 2px 2px 4px Turquoise;
       white-space: nowrap;
-    }
-    hr {
-      background-color: #F3F3F3;
-      height: 2px;
-      width: 90%;
-      box-shadow: 0px 1px 4px Turquoise;
     }
     #titleSubHeading {
         color: #62aca5;
@@ -36,11 +29,23 @@
         left: 10%;
         width: 80%;
     }
+    hr {
+      background-color: #F3F3F3;
+      height: 2px;
+      width: 90%;
+      box-shadow: 0px 1px 4px Turquoise;
+    }
     #backcanvas {
       position: fixed;
       top: 0px;
       left: 0px;
       z-index: -1;
+    }
+    .box {
+      width:200px;
+      height:200px;
+      margin: 100px;
+      display: inline-block;
     }
     </style>
   </head>
@@ -49,7 +54,16 @@
     <p id="titleSubHeading">Tranquil Indolence of the Heart</p>
     <hr>
 
-    
+    <div class="box" style="background-color: Aquamarine;"></div>
+    <div class="box" style="background-color: BlanchedAlmond;"></div>
+    <div class="box" style="background-color: Chartreuse;"></div>
+    <div class="box" style="background-color: Chocolate;"></div>
+    <div class="box" style="background-color: DarkCyan;"></div>
+    <div class="box" style="background-color: DarkOliveGreen;"></div>
+    <div class="box" style="background-color: DarkSalmon;"></div>
+    <div class="box" style="background-color: DarkOrchid;"></div>
+    <div class="box" style="background-color: DeepPink;"></div>
+
 
     <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
     <script src="effect3D.js"></script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Lone Dot to Fill an Empty Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
+    <style>
+    body {
+      background-color: #040707;
+    }
+    #titleHeading {
+      color: #F3F3F3;
+      text-align: center;
+      font-family: 'Volkhov', serif;
+      margin-bottom: 0px;
+      text-shadow: 2px 2px 4px Turquoise;
+      white-space: nowrap;
+    }
+    #titleSubHeading {
+        color: #62aca5;
+        text-shadow: 0 0 4px Turquoise;
+        font-family: 'Volkhov', serif;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        text-align: center;
+        position: relative;
+        left: 10%;
+        width: 80%;
+    }
+    hr {
+      background-color: #F3F3F3;
+      height: 2px;
+      width: 90%;
+      box-shadow: 0px 1px 4px Turquoise;
+    }
+
+    #info {
+      color: #F3F3F3;
+      font-family: 'Volkhov', serif;
+      font-size: 2em;
+      position: absolute;
+      right: 30px;
+      bottom: 25px;
+    }
+    #info:hover, #info:focus {
+      color: #6e6e6e;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #popup {
+      background-color: #040707;
+      border: #62aca5 solid;
+      padding: 10px;
+      width: 220px;
+      height: 200px;
+      position: absolute;
+      right: 25px;
+      bottom: 30px;
+    }
+    #close {
+      color: #F3F3F3;
+      font-family: 'Volkhov', serif;
+      font-size: 2em;
+      position: absolute;
+      right: 5px;
+      top: -5px;
+    }
+    #close:hover, #close:focus {
+      color: #6e6e6e;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #popuptext {
+      color: #F3F3F3;
+      text-shadow: 0 0 4px Turquoise;
+      font-family: 'Volkhov', serif;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    #backcanvas {
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      z-index: -1;
+    }
+    </style>
+  </head>
+  <body>
+    <h1 id="titleHeading">= HYPNACEDIA =</h1>
+    <p id="titleSubHeading">Tranquil Indolence of the Heart</p>
+    <hr>
+
+    <span id="info" onclick="openPopup()">?</span>
+    <div id="popup">
+      <span id="close" onclick="closePopup()">&times;</span>
+      <p id="popuptext"><u>Controls</u><br>Turn Left = A key<br>Turn Right = D key<br>Look Up = W key<br>Look Down = S key<br>Move Forward = Spacebar</p>
+    </div>
+
+    <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
+    <script>
+    function openPopup() {
+      document.getElementById("popup").style.display = "block";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+    </script>
+    <script src="space.js"></script>
+  </body>
+</html>
