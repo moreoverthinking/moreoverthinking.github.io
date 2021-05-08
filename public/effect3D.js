@@ -77,6 +77,8 @@ function drawCube(x,y,w,h,l,vpx,vpy,color) {
     ctx.closePath();
     ctx.fill();
   }
+  ctx.fillStyle = color;
+  ctx.fillRect(x,y,w,h);
 }
 
 function draw(scroll_pos) {

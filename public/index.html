@@ -2,68 +2,65 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="description" content="A portfolio of sorts filled with the loose ends of my mind">
+    <meta name="keywords" content="hypnacedia, interactive experiences">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Work in Progress</title>
+    <title>Home - Hypnacedia</title>
     <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="commonStyles.css">
     <style>
     /*#62aca5*/
-    body {
-      background-color: #040707;
-    }
-    #titleHeading {
-      color: #F3F3F3;
+
+    .selectionBox {
+      width: 80%;
+      position: relative;
+      left: 10%;
+      padding: 0;
+      margin: 0;
       text-align: center;
-      font-family: 'Volkhov', serif;
-      margin-bottom: 0px;
-      text-shadow: 2px 2px 4px Turquoise;
-      white-space: nowrap;
     }
-    #titleSubHeading {
-        color: #62aca5;
-        text-shadow: 0 0 4px Turquoise;
-        font-family: 'Volkhov', serif;
-        margin-bottom: 0px;
-        margin-top: 0px;
-        text-align: center;
-        position: relative;
-        left: 10%;
-        width: 80%;
-    }
-    hr {
-      background-color: #F3F3F3;
-      height: 2px;
-      width: 90%;
-      box-shadow: 0px 1px 4px Turquoise;
-    }
-    #backcanvas {
-      position: fixed;
-      top: 0px;
-      left: 0px;
-      z-index: -1;
-    }
+
     .box {
-      width:200px;
-      height:200px;
-      margin: 100px;
+      padding: 15px;
+      margin: 20px 100px 70px 0px;
       display: inline-block;
+      background-color: #62aca5;
+    }
+    .box img {
+      box-shadow: 0px 0px 10px 3px black;
+    }
+
+    .sectionTitle {
+      margin: 50px 10% 0 10%;
+      background-color: #242526;
+      padding: 20px 50px;
+      border-radius: 20px 50px;
+      color: #F3F3F3;
+      font-family: sans-serif;
     }
     </style>
   </head>
   <body>
-    <h1 id="titleHeading">= HYPNACEDIA =</h1>
-    <p id="titleSubHeading">Tranquil Indolence of the Heart</p>
-    <hr>
+    <a class=titleBox>
+      <h1 id="titleHeading">= HYPNACEDIA =</h1>
+      <p id="titleSubHeading">When is it going to be nap time?</p>
+    </a>
+    <hr class="topbar">
+    <div class="menu">
+      <a href="siteMap.html">Site Map</a>
+      <a href="contact.html">Contact</a>
+      <a class="selected">Home</a>
+      <a href="privacyPolicy.html">Privacy Policy</a>
+      <a href="about.html">About</a>
+    </div>
+    <hr class="bottombar">
 
-    <div class="box" style="background-color: Aquamarine;"></div>
-    <div class="box" style="background-color: BlanchedAlmond;"></div>
-    <div class="box" style="background-color: Chartreuse;"></div>
-    <div class="box" style="background-color: Chocolate;"></div>
-    <div class="box" style="background-color: DarkCyan;"></div>
-    <div class="box" style="background-color: DarkOliveGreen;"></div>
-    <div class="box" style="background-color: DarkSalmon;"></div>
-    <div class="box" style="background-color: DarkOrchid;"></div>
-    <div class="box" style="background-color: DeepPink;"></div>
-
+    <h1 class="sectionTitle">Javascript Creations<h1>
+    <div class="selectionBox">
+      <a href="emptySpace/space.html"><div class="box"><img src="thumbnails/dotPicture.png" width=198 height=198></div></a>
+      <a href="buildingGame/buildingBlocks.html"><div class="box"><img src="thumbnails/buildingGamePicture.png" width=198 height=198></div></a>
+      <a href="abstractAsteroids/abstractAsteroids.html"><div class="box"><img src="thumbnails/Abstract.png" width=198 height=198></div></a>
+    </div>
 
     <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
     <script src="effect3D.js"></script>

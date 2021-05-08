@@ -2,12 +2,23 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="When you don't know what to write/draw so you put a single dot in the center of the page.">
+    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dot - Hypnacedia</title>
+    <title>Abstract Asteroids - Hypnacedia</title>
     <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Righteous&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../commonStyles.css">
     <style>
+    #c {
+      background-color: #1e212d;
+      border: 3px solid #62aca5;
+      position: relative;
+      left: 50%;
+      transform: translate(-50%, 0);
+      margin: 80px 0px;
+      z-index: -1;
+    }
+
     #info {
       color: #F3F3F3;
       font-family: 'Volkhov', serif;
@@ -26,8 +37,8 @@
       border: #62aca5 solid;
       border-radius: 10px;
       padding: 10px;
-      width: 220px;
-      height: 200px;
+      width: 260px;
+      height: 370px;
       position: fixed;
       right: 25px;
       bottom: 30px;
@@ -52,11 +63,11 @@
       text-align: center;
     }
     #popuptext p {
-      margin: 10px 0;
+      margin: 15px 0;
     }
     </style>
   </head>
-  <body>
+  <body onload="main()">
     <a class=titleBox href="../index.html">
       <h1 id="titleHeading">= HYPNACEDIA =</h1>
       <p id="titleSubHeading">When is it going to be nap time?</p>
@@ -76,15 +87,16 @@
       <span id="close" onclick="closePopup()">&times;</span>
       <div id="popuptext">
         <p><u>Controls</u></p>
-        <p>Turn Left = A key</p>
-        <p>Turn Right = D key</p>
-        <p>Turn Up = W key</p>
-        <p>Turn Down = S key</p>
-        <p>Move Forward = Spacebar</p>
+        <p>Arrow Keys = Move</p>
+        <p>Spacebar = Shoot</p>
+        <p>Number of bullets is displayed in bottom right corner</p>
+        <p>Destroy colors by cutting them down to small enough size</p>
+        <p>Number displayed on color is amount of bullets rewarded after all of that color is destroyed</p>
+        <p>Do not run out of bullets or touch the colors</p>
       </div>
     </div>
 
-    <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
+    <canvas id="c" width=800 height=500></canvas>
     <script>
     function openPopup() {
       document.getElementById("popup").style.display = "block";
@@ -94,6 +106,6 @@
       document.getElementById("popup").style.display = "none";
     }
     </script>
-    <script src="space.js"></script>
+    <script src="abstractAsteroids.js"></script>
   </body>
 </html>

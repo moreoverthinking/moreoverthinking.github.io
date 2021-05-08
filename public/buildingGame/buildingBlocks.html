@@ -2,12 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="When you don't know what to write/draw so you put a single dot in the center of the page.">
+    <meta name="description" content="First person perspective block building game">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dot - Hypnacedia</title>
+    <title>Build! - Hypnacedia</title>
     <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../commonStyles.css">
     <style>
+
     #info {
       color: #F3F3F3;
       font-family: 'Volkhov', serif;
@@ -26,8 +27,8 @@
       border: #62aca5 solid;
       border-radius: 10px;
       padding: 10px;
-      width: 220px;
-      height: 200px;
+      width: 250px;
+      height: 300px;
       position: fixed;
       right: 25px;
       bottom: 30px;
@@ -52,11 +53,53 @@
       text-align: center;
     }
     #popuptext p {
-      margin: 10px 0;
+      margin: 15px 0;
+    }
+
+    .game {
+      width: 100%;
+      position: relative;
+      margin: 80px 0px;
+    }
+
+    #c {
+      background-color: black;
+      border: 3px solid #62aca5;
+      position: relative;
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+
+    .verticalCrossPart {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 2px;
+        height: 9px;
+        background-color: black;
+    }
+    .horizontalCrossPart {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 9px;
+        height: 2px;
+        background-color: black;
+    }
+    #hud {
+      font-size: 16px;
+      width: 100%;
+      font-family: sans-serif;
+      color: white;
+      position: absolute;
+      text-align: center;
+      top: 5px;
     }
     </style>
   </head>
-  <body>
+  <body onload="main()">
     <a class=titleBox href="../index.html">
       <h1 id="titleHeading">= HYPNACEDIA =</h1>
       <p id="titleSubHeading">When is it going to be nap time?</p>
@@ -71,20 +114,26 @@
     </div>
     <hr class="bottombar">
 
+    <div class="game">
+      <canvas id="c" width=500 height=500></canvas>
+      <div class="verticalCrossPart"></div>
+      <div class="horizontalCrossPart"></div>
+      <p id="hud">Loading 0%</p>
+    </div>
+
     <span id="info" onclick="openPopup()">?</span>
     <div id="popup">
       <span id="close" onclick="closePopup()">&times;</span>
       <div id="popuptext">
         <p><u>Controls</u></p>
-        <p>Turn Left = A key</p>
-        <p>Turn Right = D key</p>
-        <p>Turn Up = W key</p>
-        <p>Turn Down = S key</p>
-        <p>Move Forward = Spacebar</p>
+        <p>Click Game Window to Begin</p>
+        <p>WASD = Move</p>
+        <p>Spacebar = Jump</p>
+        <p>L-Shift = Change Building Mode</p>
+        <p>Mouse Click = Build/Destroy</p>
+        <p>Number Keys 1-3 = Change Block Type</p>
       </div>
     </div>
-
-    <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
     <script>
     function openPopup() {
       document.getElementById("popup").style.display = "block";
@@ -94,6 +143,6 @@
       document.getElementById("popup").style.display = "none";
     }
     </script>
-    <script src="space.js"></script>
+    <script src="buildingBlocks2.js"></script>
   </body>
 </html>
