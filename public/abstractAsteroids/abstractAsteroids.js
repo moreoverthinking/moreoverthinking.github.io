@@ -646,10 +646,10 @@ class simulation {
 
     spawnShapes(numberOfCubes, minSize, maxSize) {
         for (let i = 0; i < numberOfCubes;) {
-            let w1 = Math.floor(Math.random() * maxSize + minSize);
-            let h1 = Math.floor(Math.random() * maxSize + minSize);
-            let x1 = Math.random() * (canvas.width - w1);
-            let y1 = Math.random() * (canvas.height - h1);
+            let w1 = Math.floor(minSize + Math.random() * (maxSize - minSize));
+            let h1 = Math.floor(minSize + Math.random() * (maxSize - minSize));
+            let x1 = 30 + Math.random() * (canvas.width - w1 - 30);
+            let y1 = 30 + Math.random() * (canvas.height - h1 - 30);
 
             let x2 = this.player.x - 100;
             let y2 = this.player.y - 100;
@@ -694,7 +694,7 @@ class simulation {
         let num = (step * Math.cos((Math.PI / 2) * this.currentLevel)) + (2 * step);
         let change = Math.floor((this.currentLevel - 2) / 4) + 1;
         this.limit = Math.max(3000 - change * 500, 100);
-        this.spawnShapes(Math.round(num), 80, 100);
+        this.spawnShapes(Math.round(num), 55, 100);
     }
 
     restart() {

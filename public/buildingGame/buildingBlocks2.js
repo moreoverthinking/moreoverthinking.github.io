@@ -50,7 +50,7 @@ function loadTexture(url) {
 
 
 function main() {
-    window.game = new Engine(10, 1, 16);
+    window.game = new Engine(10, 2, 16);
 }
 
 function updateCamera(evt) {
@@ -131,6 +131,8 @@ class Chunk {
         this.y = y;
         this.z = z;
 
+        this.vertexPos = [];
+
         this.blocks = new Object();
 
         for (let x = 0; x < size; x++) {
@@ -189,7 +191,7 @@ class Entity {
     }
 
     updateGravity(dt) {
-        this.vy -= dt * 5;
+        this.vy -= dt * 10;
     }
 
     setVelocity(x, y, z) {
@@ -245,6 +247,18 @@ class BlockTexture {
       this.u2 = [ux + sizex, uy];
       this.u3 = [ux + sizex, uy + sizey];
       this.u4 = [ux, uy + sizey];
+  }
+}
+
+class BlockUV {
+  constructor(textureSize, textureCount) {
+      this.list = [];
+      let width = textureSize*6;
+      let height = textureSize*textureCount;
+      for (let i = 0; i < textureCount; i++) {
+        let y = i*textureSize / height;
+        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 0,y, textureSize/width,y, 2*textureSize/width,y, 3*textureSize/width,y, 4*textureSize/width,y, 5*textureSize/width,y));
+      }
   }
 }
 
@@ -342,8 +356,9 @@ class Engine {
         this.worldHeight = worldHeight;
         this.chunkSize = chunkSize;
         this.blockSize = 0.5;
+        this.renderDist = 3;
 
-        let pos = Math.floor(this.worldWidth / 2) * this.chunkSize * this.blockSize;
+        let pos = this.worldWidth * this.chunkSize * this.blockSize / 2;
         this.player = new Entity(pos, 8, pos);
 
         this.world = new Object();
@@ -357,22 +372,21 @@ class Engine {
 
         this.vertexCount = 0;
 
-        this.loadedCenterPoint = new Point3D(0, 0, 0);
-
-        this.textureList = [
-          new BlockTexture(0.25, 0.166, 0, 0, 0.25, 0, 0.5, 0, 0.75, 0, 0, 0.166, 0.25, 0.166),
-          new BlockTexture(0.25, 0.166, 0.5, 0.166, 0.75, 0.166, 0, 0.333, 0.25, 0.333, 0.50, 0.333, 0.75, 0.333),
-          new BlockTexture(0.25, 0.166, 0, 0.5, 0.25, 0.5, 0.5, 0.5, 0.75, 0.5, 0, 0.666, 0.25, 0.666)
-        ];
+        this.blockTextureUv = new BlockUV(8, 4);
 
         let _this = this;
-        if (typeof(Storage) !== "undefined" && sessionStorage.getItem("0_0_0") === null) {
-            this.loadInterval = setInterval(function(){_this.loadMap();}, 0);
-        }
-        else {
-            console.log("map already loaded");
+        if (typeof(Storage) !== "undefined") {
+          if (sessionStorage.getItem("0_0_0") === null) {
+              this.loadInterval = setInterval(function(){_this.loadMap();}, 0);
+          }
+          else if (sessionStorage.getItem((this.worldWidth-1) + "_" + (this.worldHeight-1) + "_" + (this.worldWidth-1)) === null) {
+            console.log("loading was not allowed to complete")
+          }
+          else {
+            console.log("map already loaded")
             this.afterLoadInitialization();
-        }
+          }
+      }
     }
 
     generateWorld() {
@@ -384,6 +398,7 @@ class Engine {
             try {
                 //places blocks in map
                 let c = new Chunk(x, y, z, this.chunkSize);
+                if (y == 0) {
                 for (let ix = 0; ix < this.chunkSize; ix++) {
                     for (let iz = 0; iz < this.chunkSize; iz++) {
 
@@ -394,9 +409,10 @@ class Engine {
                       let iy = Math.floor(this.chunkSize*n);
                       c.blocks[ix + "_" + iy + "_" + iz].type = 1;
                       for (let fy = 0; fy < iy; fy++) {
-                        c.blocks[ix + "_" + fy + "_" + iz].type = 3;
+                        c.blocks[ix + "_" + fy + "_" + iz].type = 2;
                       }
                     }
+                }
                 }
 
                 //loads map into local storage
@@ -422,12 +438,14 @@ class Engine {
     }
 
     loadChunk(worldX, worldY, worldZ) {
+      //if (!this.world.hasOwnProperty(worldX + "_" + worldY + "_" + worldZ)) {
         let str = sessionStorage.getItem(worldX + "_" + worldY + "_" + worldZ);
         let part = new Chunk(worldX, worldY, worldZ, this.chunkSize);
         part.parseString(str);
-        if (!this.world.hasOwnProperty(worldX + "_" + worldY + "_" + worldZ)) {
-            this.world[worldX + "_" + worldY + "_" + worldZ] = part;
-        }
+        this.world[worldX + "_" + worldY + "_" + worldZ] = part;
+
+        this.genChunkVertexPos(worldX, worldY, worldZ);
+      //}
     }
 
     unloadChunk(worldX, worldY, worldZ) {
@@ -439,12 +457,36 @@ class Engine {
     }
 
     updateChunkLoading() {
-        let width = this.chunkSize * this.blockSize * 0.65;
-        let wx = this.loadedCenterPoint.x*this.chunkSize*this.blockSize;
-        let wy = this.loadedCenterPoint.y*this.chunkSize*this.blockSize;
-        let wz = this.loadedCenterPoint.z*this.chunkSize*this.blockSize;
+      let size = this.chunkSize*this.blockSize;
+      for (let a = 0; a < Math.PI / 2; a += Math.PI / 6) {
+        for (let d = 0; d < size * this.renderDist; d += size / 2) {
+          let px = this.player.x + Math.cos(this.player.aY + a + 1.178) * d;
+          let pz = this.player.z + Math.sin(this.player.aY + a + 1.178) * d;
+          let cx = Math.floor(px / size);
+          let cz = Math.floor(pz / size);
+          if (!this.world.hasOwnProperty(cx + "_0_" + cz)) {
+            for (let i = 0; i < this.worldHeight; i++) {
+              this.loadChunk(cx, i, cz);
+            }
+            this.updateWorldVertexPos();
+            return;
+          }
+        }
+      }
+    }
 
+    updatechunkUnloading() {
+      let size = this.chunkSize*this.blockSize;
+      let cx = Math.floor(this.player.x / size);
+      let cz = Math.floor(this.player.z / size);
 
+      let cs = Object.keys(this.world);
+      for (let c of cs) {
+        if (Math.abs(this.world[c].x - cx) > this.renderDis + 1 || Math.abs(this.world[c].z - cz) > this.renderDist + 1) {
+          this.unloadChunk(this.world[c].x, this.world[c].y, this.world[c].z);
+          return;
+        }
+      }
     }
 
     afterLoadInitialization() {
@@ -488,18 +530,19 @@ class Engine {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, 4 * 5 * 36 * 100000, gl.DYNAMIC_DRAW);
 
+        //Loaded a small patch of chunks around the player at the start of the game
+        /*
         let pos = Math.floor(this.worldWidth / 2);
-        this.loadedCenterPoint.setPos(pos, 0, pos);
-
-        //testing loading algorithms
-        for (let x = 0; x < 7; x++) {
-          for (let z = 0; z < 7; z++) {
-            this.loadChunk(x + 0, 0, z + 0);
+        for (let x = 0; x < 2; x++) {
+          for (let z = 0; z < 2; z++) {
+            this.loadChunk(pos + x - 1, 0, pos + z - 1);
           }
         }
+        */
 
+        this.updateChunkLoading();
 
-        this.generateVertexPositions();
+        this.updateWorldVertexPos();
 
         document.addEventListener('pointerlockchange', lockChangeAlert, false);
         canvas.addEventListener("mousedown", mousePressed);
@@ -517,25 +560,39 @@ class Engine {
 
     }
 
-    generateVertexPositions() {
-        let positions = [];
+    /*
+    getTypeof(cx, cy, cz, bx, by, bz) {
+      let hc = (this.chunkSize - 1) / 2;
+      let dx = Math.trunc((bx - hc) / (hc + 1)) + 0;
+      let dy = Math.trunc((by - hc) / (hc + 1)) + 0;
+      let dz = Math.trunc((bz - hc) / (hc + 1)) + 0;
 
-        let cs = Object.keys(this.world);
-        for (let c of cs) {
-            let bs = Object.keys(this.world[c].blocks)
+      if (typeof this.world[(cx + dx) + "_" + (cy + dy) + "_" + (cz + dz)] !== 'undefined') {
+        let ox = dx * (this.chunkSize);
+        let oy = dy * (this.chunkSize);
+        let oz = dz * (this.chunkSize);
+        return this.world[(cx + dx) + "_" + (cy + dy) + "_" + (cz + dz)].blocks[(bx - ox) + "_" + (by - oy) + "_" + (bz - oz)].type;
+      }
+      return 1;
+    }
+    */
+
+
+    genChunkVertexPos(cx, cy, cz) {
+          this.world[cx + "_" + cy + "_" + cz].vertexPos.length = 0;
+
+            let bs = Object.keys(this.world[cx + "_" + cy + "_" + cz].blocks);
             for (let b of bs) {
-                let cc = this.world[c];
-                let bb = cc.blocks[b];
+                let bb = this.world[cx + "_" + cy + "_" + cz].blocks[b];
                 if (bb.type == 0) {continue;}
-                let wx = cc.x*this.chunkSize*this.blockSize + bb.x*this.blockSize;
-                let wy = cc.y*this.chunkSize*this.blockSize + bb.y*this.blockSize;
-                let wz = cc.z*this.chunkSize*this.blockSize + bb.z*this.blockSize;
-                let tex = this.textureList[bb.type - 1];
-
+                let wx = cx*this.chunkSize*this.blockSize + bb.x*this.blockSize;
+                let wy = cy*this.chunkSize*this.blockSize + bb.y*this.blockSize;
+                let wz = cz*this.chunkSize*this.blockSize + bb.z*this.blockSize;
+                let tex = this.blockTextureUv.list[bb.type - 1];
                 {
-                  let bbf = cc.blocks[bb.x + "_" + bb.y + "_" + (bb.z - 1)];
+                  let bbf = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + bb.y + "_" + (bb.z - 1)];
                   if (!(typeof bbf !== 'undefined' && bbf.type > 0)) {
-                  positions.push(wx, wy, wz, tex.f4[0], tex.f4[1],
+                  this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.f4[0], tex.f4[1],
                                    wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1],
                                    wx, wy + this.blockSize, wz, tex.f1[0], tex.f1[1],
                                    wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1],
@@ -545,9 +602,9 @@ class Engine {
                   }
                 }
                 {
-                  let bbb = cc.blocks[bb.x + "_" + bb.y + "_" + (bb.z + 1)];
+                  let bbb = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + bb.y + "_" + (bb.z + 1)];
                   if (!(typeof bbb !== 'undefined' && bbb.type > 0)) {
-                    positions.push(wx, wy, wz + this.blockSize, tex.b3[0], tex.b3[1],
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz + this.blockSize, tex.b3[0], tex.b3[1],
                                    wx, wy + this.blockSize, wz + this.blockSize, tex.b2[0], tex.b2[1],
                                    wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1],
                                    wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1],
@@ -557,9 +614,9 @@ class Engine {
                   }
                 }
                 {
-                  let bbl = cc.blocks[(bb.x - 1) + "_" + bb.y + "_" + bb.z];
+                  let bbl = this.world[cx + "_" + cy + "_" + cz].blocks[(bb.x - 1) + "_" + bb.y + "_" + bb.z];
                   if (!(typeof bbl !== 'undefined' && bbl.type > 0)) {
-                   positions.push(wx, wy, wz, tex.l3[0], tex.l3[1],
+                   this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.l3[0], tex.l3[1],
                                    wx, wy  + this.blockSize, wz, tex.l2[0], tex.l2[1],
                                    wx, wy, wz + this.blockSize, tex.l4[0], tex.l4[1],
                                    wx, wy + this.blockSize, wz,  tex.l2[0], tex.l2[1],
@@ -569,9 +626,9 @@ class Engine {
                   }
                 }
                 {
-                  let bbr = cc.blocks[(bb.x + 1) + "_" + bb.y + "_" + bb.z];
+                  let bbr = this.world[cx + "_" + cy + "_" + cz].blocks[(bb.x + 1) + "_" + bb.y + "_" + bb.z];
                   if (!(typeof bbr !== 'undefined' && bbr.type > 0)) {
-                    positions.push(wx + this.blockSize, wy, wz,  tex.r4[0], tex.r4[1],
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx + this.blockSize, wy, wz,  tex.r4[0], tex.r4[1],
                                    wx + this.blockSize, wy, wz + this.blockSize, tex.r3[0], tex.r3[1],
                                    wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1],
                                    wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1],
@@ -581,9 +638,9 @@ class Engine {
                   }
                 }
                 {
-                  let bbt = cc.blocks[bb.x + "_" + (bb.y + 1) + "_" + bb.z];
+                  let bbt = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + (bb.y + 1) + "_" + bb.z];
                   if (!(typeof bbt !== 'undefined' && bbt.type > 0)) {
-                    positions.push(wx, wy + this.blockSize, wz, tex.t4[0], tex.t4[1],
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy + this.blockSize, wz, tex.t4[0], tex.t4[1],
                                    wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1],
                                    wx, wy + this.blockSize, wz + this.blockSize, tex.t1[0], tex.t1[1],
                                    wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1],
@@ -593,9 +650,9 @@ class Engine {
                     }
                   }
                   {
-                    let bbu = cc.blocks[bb.x + "_" + (bb.y - 1) + "_" + bb.z];
+                    let bbu = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + (bb.y - 1) + "_" + bb.z];
                     if (!(typeof bbu !== 'undefined' && bbu.type > 0)) {
-                    positions.push(wx, wy, wz, tex.u1[0], tex.u1[1],
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.u1[0], tex.u1[1],
                                    wx, wy, wz + this.blockSize, tex.u4[0], tex.u4[1],
                                    wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1],
                                    wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1],
@@ -604,13 +661,20 @@ class Engine {
                                   );
                                 }
                   }
-            }
+
         }
+    }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(positions));
+    updateWorldVertexPos() {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+      let i = 0;
+      let cs = Object.keys(this.world);
+      for (let c of cs) {
+        gl.bufferSubData(gl.ARRAY_BUFFER, i * 4, new Float32Array(this.world[c].vertexPos));
+        i += this.world[c].vertexPos.length;
+      }
 
-        this.vertexCount = positions.length / 5;
+      this.vertexCount = i / 5;
     }
 
 
@@ -652,14 +716,6 @@ class Engine {
             this.player.vx = -Math.cos(this.player.aY + Math.PI / 2) * 2;
             this.player.vz = -Math.sin(this.player.aY + Math.PI / 2) * 2;
         }
-        else if (this.keyMap[68]) {
-            this.player.vx = Math.cos(this.player.aY) * 2;
-            this.player.vz = Math.sin(this.player.aY) * 2;
-        }
-        else if (this.keyMap[65]) {
-            this.player.vx = -Math.cos(this.player.aY) * 2;
-            this.player.vz = -Math.sin(this.player.aY) * 2;
-        }
         else {
             this.player.vx = 0;
             this.player.vz = 0;
@@ -688,7 +744,8 @@ class Engine {
             let bz = Math.floor((pz - cz*this.chunkSize*this.blockSize) / this.blockSize);
             if(this.world[cx + "_" + cy + "_" + cz].blocks[bx + "_" + by + "_" + bz].type != 0) {
                 this.world[cx + "_" + cy + "_" + cz].blocks[bx + "_" + by + "_" + bz].type = 0;
-                this.generateVertexPositions();
+                this.genChunkVertexPos(cx, cy, cz);
+                this.updateWorldVertexPos();
                 return;
             }
         }
@@ -723,7 +780,8 @@ class Engine {
                 bz = Math.floor((pz2 - cz*this.chunkSize*this.blockSize) / this.blockSize);
 
                 this.world[cx + "_" + cy + "_" + cz].blocks[bx + "_" + by + "_" + bz].type = this.buildingType;
-                this.generateVertexPositions();
+                this.genChunkVertexPos(cx, cy, cz);
+                this.updateWorldVertexPos();
                 return;
             }
         }
@@ -782,10 +840,10 @@ class Engine {
         this.dt = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
 
-        //this.updateChunkLoading();
+        this.updateChunkLoading();
+        this.updatechunkUnloading();
 
         this.renderWorld();
-
 
         if (!this.playerOnGround()) {
             this.player.updateGravity(this.dt);
