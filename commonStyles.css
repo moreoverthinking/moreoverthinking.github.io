@@ -6,8 +6,13 @@ body {
 }
 
 .titleBox {
+  margin-top: 20px;
+}
+
+.titleBox a {
   text-decoration: none;
 }
+
 .titleBox:hover {
   cursor: pointer;
 }
@@ -15,20 +20,16 @@ body {
   color: #F3F3F3;
   text-align: center;
   font-family: 'Volkhov', serif;
-  margin-bottom: 0px;
+  margin: 0;
   text-shadow: 2px 2px 4px Turquoise;
   white-space: nowrap;
 }
-#titleSubHeading {
+.titleSubHeading {
     color: #62aca5;
     text-shadow: 0 0 4px Turquoise;
     font-family: 'Volkhov', serif;
-    margin-bottom: 20px;
-    margin-top: 0px;
+    margin: 0;
     text-align: center;
-    position: relative;
-    left: 10%;
-    width: 80%;
 }
 
 hr {
@@ -37,6 +38,7 @@ hr {
   box-shadow: 0px 1px 5px Turquoise;
 }
 .topbar {
+  margin-top: 20px;
   width: 90%;
 }
 .bottombar {
@@ -51,10 +53,11 @@ hr {
 }
 .menu a {
   display: inline-block;
-  font-size: 0.8em;
+  font-size: 1em;
   font-family: sans-serif;
   margin: 10px 40px 5px 40px;
   text-decoration: none;
+  text-shadow: 0px 2px 4px Turquoise;
 }
 .menu a:hover {
   cursor: pointer;
@@ -73,4 +76,50 @@ hr {
   top: 0px;
   left: 0px;
   z-index: -1;
+}
+
+
+#info {
+  color: #F3F3F3;
+  font-family: 'Volkhov', serif;
+  font-size: 2em;
+  position: fixed;
+  right: 30px;
+  bottom: 25px;
+}
+#info:hover, #info:focus {
+  color: #6e6e6e;
+  text-decoration: none;
+  cursor: pointer;
+}
+#popup {
+  background-color: #040707;
+  border: #62aca5 solid;
+  border-radius: 10px;
+  padding: 10px;
+  position: fixed;
+  right: 25px;
+  bottom: 30px;
+  display: none;
+}
+#close {
+  color: #F3F3F3;
+  font-family: 'Volkhov', serif;
+  font-size: 2em;
+  position: absolute;
+  right: 5px;
+  top: -5px;
+}
+#close:hover, #close:focus {
+  color: #6e6e6e;
+  text-decoration: none;
+  cursor: pointer;
+}
+#popuptext {
+  color: #F3F3F3;
+  font-family: 'Volkhov', serif;
+  text-align: center;
+}
+#popuptext p {
+  margin: 15px 0;
 }

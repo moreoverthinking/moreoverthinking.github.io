@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Main area containing links to the most relevant pages on the website">
+    <meta name="keywords" content="hypnacedia, games">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home - Moreoverthinking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="commonStyles.css">
+    <style>
+    /*#62aca5*/
+
+    .selectionBox {
+      margin: 60px 0;
+      text-align: center;
+    }
+
+    .box {
+      background-color: #62aca5;
+      padding: 15px;
+      margin: 20px 0;
+      display: inline-block;
+      visibility: hidden;
+    }
+    .box img {
+      visibility: visible;
+      box-shadow: 0px 0px 10px 3px black;
+    }
+
+    .sectionTitle {
+      margin: 50px 10% 0 10%;
+      background-color: #242526;
+      padding: 20px 50px;
+      border-radius: 20px 50px;
+      color: #F3F3F3;
+      font-family: sans-serif;
+    }
+
+    .sectionDescriptionBox {
+      direction: ltr;
+      display: inline-block;
+      max-width: 500px;
+      padding: 10px;
+      margin: 20px 40px;
+      background-color: #242526;
+      border-radius: 20px 50px;
+      vertical-align: top;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .sectionDescriptionBox p {
+      color: #F3F3F3;
+      line-height: 1.5;
+    }
+
+    .sectionDescriptionBox h1 {
+      color: #F3F3F3;
+    }
+    </style>
+  </head>
+  <body>
+    <div class=titleBox>
+      <p class="titleSubHeading">I needed a place to put my stuff</p>
+      <h1 id="titleHeading">MoreoverThinking</h1>
+      <p class="titleSubHeading">So I decided to put it in here</p>
+    </div>
+    <hr class="topbar">
+    <div class="menu">
+      <a href="siteMap.html">Site Map</a>
+      <a href="contact.html">Contact</a>
+      <a class="selected">Home</a>
+      <a href="privacyPolicy.html">Privacy Policy</a>
+      <a href="about.html">About</a>
+    </div>
+    <hr class="bottombar">
+
+    <div class="selectionBox" style="direction: rtl;">
+      <a href="emptySpace/space.html"><div class="box"><img src="thumbnails/dotPicture.png" width=198 height=198></div></a>
+      <div class="sectionDescriptionBox">
+        <h1>An Empty Page</h1>
+        <p>
+          Frozen by the vastness of options, I placed a single dot in the center of the page. Once contrast was established, I could finally see the picture.
+        </p>
+      </div>
+    </div>
+    <div class="selectionBox">
+      <a href="buildingGame/buildingBlocks.html"><div class="box"><img src="thumbnails/buildingGamePicture.png" width=198 height=198></div></a>
+      <div class="sectionDescriptionBox">
+        <h1>Building Block Game</h1>
+        <p>
+          Figuring out how 3D games and graphics are created has been an interest of mine for the longest time. I had been studying opengl when I decided to return to an earlier project where I made a garbage diy Minecraft. I basically remade the garbage diy Minecraft but this time using webgl and a local storage world saving system.
+        </p>
+      </div>
+    </div>
+    <div class="selectionBox" style="direction: rtl;">
+      <a href="abstractAsteroids/abstractAsteroids.html"><div class="box"><img src="thumbnails/Abstract.png" width=198 height=198></div></a>
+      <div class="sectionDescriptionBox">
+        <h1>Abstract Asteroids</h1>
+        <p>
+          It is a spin on the idea and structure of the original asteroids game. I wanted to make it so the geometric shapes were sliced instead of just being blown up.
+        </p>
+      </div>
+    </div>
+
+    <canvas id="backcanvas">I'm sorry, but your browser has failed you.</canvas>
+    <script src="effect3D.js"></script>
+  </body>
+</html>
