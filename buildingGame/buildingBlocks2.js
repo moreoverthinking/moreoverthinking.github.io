@@ -1,6 +1,7 @@
 var canvas = document.getElementById("c");
 var hud = document.getElementById("hud");
 var gl = canvas.getContext("webgl");
+var ctx = hud.getContext("2d");
 
 function loadShader(gl, type, sourceCode) {
     var shader = gl.createShader( type );
@@ -88,7 +89,7 @@ function keyUpResponse(evt) {
 }
 
 function lockChangeAlert() {
-    if (document.pointerLockElement === canvas) {
+    if (document.pointerLockElement === hud) {
         document.addEventListener("mousemove", updateCamera, false);
         window.addEventListener("keydown", keyDownResponse);
         window.addEventListener("keyup", keyUpResponse);
@@ -100,7 +101,7 @@ function lockChangeAlert() {
 }
 
 function mousePressed() {
-  if (document.pointerLockElement === canvas) {
+  if (document.pointerLockElement === hud) {
       //do stuff when scren clicked
     if (game.buildingMode) {
         game.build();
@@ -110,10 +111,16 @@ function mousePressed() {
     }
   }
   else {
-      canvas.requestPointerLock();
+      hud.requestPointerLock();
   }
 }
 
+function saveGame() {
+  console.log("save");
+  for (chunk in game.world) {
+    sessionStorage.setItem(chunk, game.world[chunk]);
+  }
+}
 
 class Block {
     constructor(x, y, z) {
@@ -431,7 +438,11 @@ class Engine {
 
     loadMap() {
         if (this.frameCount % 10 == 0) {
-            hud.innerHTML = "Loading " + Math.floor(this.frameCount / (this.worldWidth * this.worldWidth * this.worldHeight) * 100) + "%";
+            ctx.clearRect(0,0,hud.width,hud.height)
+            ctx.fillStyle = "#F3F3F3";
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Loading " + Math.floor(this.frameCount / (this.worldWidth * this.worldWidth * this.worldHeight) * 100) + "%", 250, 50);
         }
         this.generateWorld();
         this.frameCount++;
@@ -545,7 +556,7 @@ class Engine {
         this.updateWorldVertexPos();
 
         document.addEventListener('pointerlockchange', lockChangeAlert, false);
-        canvas.addEventListener("mousedown", mousePressed);
+        hud.addEventListener("mousedown", mousePressed);
 
         this.updateHUD();
 
@@ -704,7 +715,14 @@ class Engine {
     }
 
     updateHUD() {
-      hud.innerHTML = "Building Mode: " + (this.buildingMode ? this.buildingType : this.buildingMode);
+      ctx.clearRect(0,0,hud.width,hud.height)
+      ctx.fillStyle = "#F3F3F3";
+      ctx.font = "24px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Building Mode: " + (this.buildingMode ? this.buildingType : this.buildingMode), 250, 50);
+
+      ctx.fillRect(240, 248, 20, 4);
+      ctx.fillRect(248, 240, 4, 20);
     }
 
     keyEvents() {

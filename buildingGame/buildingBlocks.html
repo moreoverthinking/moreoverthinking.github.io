@@ -16,44 +16,41 @@
     .game {
       width: 100%;
       position: relative;
-      margin: 80px 0px;
+      margin: 80px 0px 680px;
+    }
+
+    #hud {
+      border: 3px solid #62aca5;
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0);
     }
 
     #c {
       background-color: black;
       border: 3px solid #62aca5;
-      position: relative;
+      position: absolute;
       left: 50%;
       transform: translate(-50%, 0);
     }
 
-    .verticalCrossPart {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 2px;
-        height: 9px;
-        background-color: black;
+    #save {
+      color: #F3F3F3;
+      position: fixed;
+      right: 25px;
+      bottom: 80px;
+      width: 48px;
+      height: 48px;
+      background-repeat: no-repeat;
+      background-image: url("save.png");
     }
-    .horizontalCrossPart {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: 9px;
-        height: 2px;
-        background-color: black;
+    #save:hover, #save:focus {
+      color: #6e6e6e;
+      text-decoration: none;
+      cursor: pointer;
+      background-image: url("saveHover.png");
     }
-    #hud {
-      font-size: 16px;
-      width: 100%;
-      font-family: sans-serif;
-      color: white;
-      position: absolute;
-      text-align: center;
-      top: 5px;
-    }
+
     </style>
   </head>
   <body onload="main()">
@@ -76,11 +73,10 @@
 
     <div class="game">
       <canvas id="c" width=500 height=500></canvas>
-      <div class="verticalCrossPart"></div>
-      <div class="horizontalCrossPart"></div>
-      <p id="hud">Loading 0%</p>
+      <canvas id="hud" width=500 height=500></canvas>
     </div>
 
+    <span id="save" onclick="saveGame()"></span>
     <span id="info" onclick="openPopup()">?</span>
     <div id="popup">
       <span id="close" onclick="closePopup()">&times;</span>
