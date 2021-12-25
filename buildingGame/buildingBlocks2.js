@@ -112,14 +112,18 @@ function mousePressed() {
   }
   else {
       hud.requestPointerLock();
+      game.updateHUD();
   }
 }
 
 function saveGame() {
-  console.log("save");
   for (chunk in game.world) {
     sessionStorage.setItem(chunk, game.world[chunk]);
   }
+  ctx.fillStyle = "#F3F3F3";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("World Saved", 250, 460);
 }
 
 class Block {
@@ -388,6 +392,11 @@ class Engine {
           }
           else if (sessionStorage.getItem((this.worldWidth-1) + "_" + (this.worldHeight-1) + "_" + (this.worldWidth-1)) === null) {
             console.log("loading was not allowed to complete")
+            ctx.fillStyle = "#F3F3F3";
+            ctx.font = "24px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Map was not allowed", 250, 450);
+            ctx.fillText("to finish loading", 250, 480);
           }
           else {
             console.log("map already loaded")
