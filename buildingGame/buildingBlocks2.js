@@ -268,7 +268,7 @@ class BlockUV {
       let height = textureSize*textureCount + 2*textureCount;
       for (let i = 0; i < textureCount; i++) {
         let y = (i*textureSize + (i*2+1)) / height;
-        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 1,y, 1,y, (textureSize + 3)/width,y, (textureSize + 3)/width,y, (2*textureSize + 5)/width,y, (3*textureSize + 7)/width,y));
+        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 1/width,y, 1/width,y, (textureSize + 3)/width,y, (textureSize + 3)/width,y, (2*textureSize + 5)/width,y, (3*textureSize + 7)/width,y));
       }
   }
 }
