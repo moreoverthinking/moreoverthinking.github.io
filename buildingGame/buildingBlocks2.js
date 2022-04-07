@@ -33,15 +33,15 @@ function loadTexture(url) {
 
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-    //if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-       //gl.generateMipmap(gl.TEXTURE_2D);
-    //} else {
+    if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+       gl.generateMipmap(gl.TEXTURE_2D);
+    } else {
        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    //}
+    }
   }
   image.crossOrigin = "Anonymous";
   image.src = url;
@@ -264,11 +264,11 @@ class BlockTexture {
 class BlockUV {
   constructor(textureSize, textureCount) {
       this.list = [];
-      let width = textureSize*4;
-      let height = textureSize*textureCount;
+      let width = textureSize*4 + 2*4;
+      let height = textureSize*textureCount + 2*textureCount;
       for (let i = 0; i < textureCount; i++) {
-        let y = i*textureSize / height;
-        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 0,y, 0,y, textureSize/width,y, textureSize/width,y, 2*textureSize/width,y, 3*textureSize/width,y));
+        let y = (i*textureSize + (i*2+1)) / height;
+        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 1,y, 1,y, (textureSize + 3)/width,y, (textureSize + 3)/width,y, (2*textureSize + 5)/width,y, (3*textureSize + 7)/width,y));
       }
   }
 }
