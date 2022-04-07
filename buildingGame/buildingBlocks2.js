@@ -264,11 +264,11 @@ class BlockTexture {
 class BlockUV {
   constructor(textureSize, textureCount) {
       this.list = [];
-      let width = textureSize*6;
+      let width = textureSize*4;
       let height = textureSize*textureCount;
       for (let i = 0; i < textureCount; i++) {
         let y = i*textureSize / height;
-        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 0,y, textureSize/width,y, 2*textureSize/width,y, 3*textureSize/width,y, 4*textureSize/width,y, 5*textureSize/width,y));
+        this.list.push(new BlockTexture(textureSize/width, textureSize/height, 0,y, 0,y, textureSize/width,y, textureSize/width,y, 2*textureSize/width,y, 3*textureSize/width,y));
       }
   }
 }
