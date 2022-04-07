@@ -383,7 +383,7 @@ class Engine {
 
         this.vertexCount = 0;
 
-        this.blockTextureUv = new BlockUV(8, 4);
+        this.blockTextureUv = new BlockUV(128, 4);
 
         let _this = this;
         if (typeof(Storage) !== "undefined") {
