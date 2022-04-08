@@ -51,7 +51,7 @@ function loadTexture(url) {
 
 
 function main() {
-    window.game = new Engine(10, 2, 16);
+    window.game = new Engine(16, 2, 16);
 }
 
 function updateCamera(evt) {
@@ -367,7 +367,7 @@ class Engine {
         this.worldHeight = worldHeight;
         this.chunkSize = chunkSize;
         this.blockSize = 0.5;
-        this.renderDist = 3;
+        this.renderDist = 2;
 
         let pos = this.worldWidth * this.chunkSize * this.blockSize / 2;
         this.player = new Entity(pos, 8, pos);
@@ -386,10 +386,32 @@ class Engine {
         this.blockTextureUv = new BlockUV(128, 4);
 
         let _this = this;
-        if (typeof(Storage) !== "undefined") {
-          if (sessionStorage.getItem("0_0_0") === null) {
-              this.loadInterval = setInterval(function(){_this.loadMap();}, 0);
+
+        this.request = window.indexedDB.open("worldData",1);
+
+        let neededUpgrade = false;
+        this.request.onupgradeneeded = function(e) {
+          let db = e.target.result;
+          db.createObjectStore("chunkSaves",{keyPath:"cID"});
+          neededUpgrade = true;
+        };
+
+        this.request.onerror = function(e) {
+          console.log("Error: " + e.target.errorCode);
+        };
+
+        this.request.onsuccess = function(e) {
+          //let db = game.request.result;
+          //let tx = db.transaction("chunkSaves","readwrite");
+          //let store = tx.objectStore("chunkSaves");
+          /*tx.onComplete = function() {
+            db.close();
+          };*/
+
+          if (neededUpgrade) {
+              game.loadInterval = setInterval(function(){_this.loadMap();}, 0);
           }
+          /*
           else if (sessionStorage.getItem((this.worldWidth-1) + "_" + (this.worldHeight-1) + "_" + (this.worldWidth-1)) === null) {
             console.log("loading was not allowed to complete")
             ctx.fillStyle = "#F3F3F3";
@@ -398,11 +420,12 @@ class Engine {
             ctx.fillText("Map was not allowed", 250, 450);
             ctx.fillText("to finish loading", 250, 480);
           }
+          */
           else {
             console.log("map already loaded")
-            this.afterLoadInitialization();
+            game.afterLoadInitialization();
           }
-      }
+      };
     }
 
     generateWorld() {
@@ -411,7 +434,7 @@ class Engine {
             let y = Math.floor(this.frameCount / this.worldWidth % this.worldHeight);
             let z = Math.floor(this.frameCount % this.worldWidth);
 
-            try {
+            //try {
                 //places blocks in map
                 let c = new Chunk(x, y, z, this.chunkSize);
                 if (y == 0) {
@@ -432,12 +455,16 @@ class Engine {
                 }
 
                 //loads map into local storage
-                sessionStorage.setItem(x + "_" + y + "_" + z, c);
-            }
-            catch {
+                //sessionStorage.setItem(x + "_" + y + "_" + z, c);
+                let db = this.request.result;
+                let tx = db.transaction("chunkSaves","readwrite");
+                let store = tx.objectStore("chunkSaves");
+                store.put({cID:x + "_" + y + "_" + z,cData:c.toString()});
+            //}
+            /*catch {
                 console.log("storage maxed out");
                 clearInterval(this.loadInterval);
-            }
+            }*/
         } else {
             console.log("loading done");
             clearInterval(this.loadInterval);
@@ -458,20 +485,37 @@ class Engine {
     }
 
     loadChunk(worldX, worldY, worldZ) {
-      //if (!this.world.hasOwnProperty(worldX + "_" + worldY + "_" + worldZ)) {
-        let str = sessionStorage.getItem(worldX + "_" + worldY + "_" + worldZ);
-        let part = new Chunk(worldX, worldY, worldZ, this.chunkSize);
-        part.parseString(str);
-        this.world[worldX + "_" + worldY + "_" + worldZ] = part;
+      if (worldX < this.worldWidth && worldZ < this.worldWidth && worldX >= 0 && worldZ >= 0) {
+        let db = this.request.result;
+        let tx = db.transaction("chunkSaves","readwrite");
+        let store = tx.objectStore("chunkSaves");
 
-        this.genChunkVertexPos(worldX, worldY, worldZ);
-      //}
+        let data = store.get(worldX + "_" + worldY + "_" + worldZ);
+        data.onerror = function(e) {
+          console.log("Error " + e.target.errorCode);
+        }
+        data.onsuccess = function(e) {
+          let str = data.result.cData;
+
+          let part = new Chunk(worldX, worldY, worldZ, game.chunkSize);
+          part.parseString(str);
+          game.world[worldX + "_" + worldY + "_" + worldZ] = part;
+
+          game.genChunkVertexPos(worldX, worldY, worldZ);
+        };
+      }
     }
 
     unloadChunk(worldX, worldY, worldZ) {
         let pos = worldX + "_" + worldY + "_" + worldZ;
         if (this.world.hasOwnProperty(pos)) {
-            sessionStorage.setItem(pos, this.world[pos]);
+            //sessionStorage.setItem(pos, this.world[pos]);
+            let db = this.request.result;
+            let tx = db.transaction("chunkSaves","readwrite");
+            let store = tx.objectStore("chunkSaves");
+
+            store.put({cID:pos,cData:this.world[pos].toString()});
+
             delete this.world[pos];
         }
     }
@@ -486,6 +530,7 @@ class Engine {
           let cz = Math.floor(pz / size);
           if (!this.world.hasOwnProperty(cx + "_0_" + cz)) {
             for (let i = 0; i < this.worldHeight; i++) {
+              this.world[cx + "_" + i + "_" + cz] = null;
               this.loadChunk(cx, i, cz);
             }
             this.updateWorldVertexPos();
@@ -493,6 +538,7 @@ class Engine {
           }
         }
       }
+
     }
 
     updatechunkUnloading() {
@@ -502,6 +548,9 @@ class Engine {
 
       let cs = Object.keys(this.world);
       for (let c of cs) {
+        if (!this.world[c]) {
+          continue;
+        }
         if (Math.abs(this.world[c].x - cx) > this.renderDis + 1 || Math.abs(this.world[c].z - cz) > this.renderDist + 1) {
           this.unloadChunk(this.world[c].x, this.world[c].y, this.world[c].z);
           return;
@@ -690,6 +739,9 @@ class Engine {
       let i = 0;
       let cs = Object.keys(this.world);
       for (let c of cs) {
+        if (!this.world[c]) {
+          continue;
+        }
         gl.bufferSubData(gl.ARRAY_BUFFER, i * 4, new Float32Array(this.world[c].vertexPos));
         i += this.world[c].vertexPos.length;
       }
@@ -729,6 +781,9 @@ class Engine {
       ctx.font = "24px Arial";
       ctx.textAlign = "center";
       ctx.fillText("Building Mode: " + (this.buildingMode ? this.buildingType : this.buildingMode), 250, 50);
+
+      ctx.font = "24px Arial";
+      ctx.fillText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.z) + ")", 250, 450)
 
       ctx.fillRect(240, 248, 20, 4);
       ctx.fillRect(248, 240, 4, 20);
