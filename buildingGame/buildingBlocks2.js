@@ -782,9 +782,6 @@ class Engine {
       ctx.textAlign = "center";
       ctx.fillText("Building Mode: " + (this.buildingMode ? this.buildingType : this.buildingMode), 250, 50);
 
-      ctx.font = "24px Arial";
-      ctx.fillText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.z) + ")", 250, 450)
-
       ctx.fillRect(240, 248, 20, 4);
       ctx.fillRect(248, 240, 4, 20);
     }
