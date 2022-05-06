@@ -34,23 +34,6 @@
       transform: translate(-50%, 0);
     }
 
-    #save {
-      color: #F3F3F3;
-      position: fixed;
-      right: 25px;
-      bottom: 80px;
-      width: 48px;
-      height: 48px;
-      background-repeat: no-repeat;
-      background-image: url("save.png");
-    }
-    #save:hover, #save:focus {
-      color: #6e6e6e;
-      text-decoration: none;
-      cursor: pointer;
-      background-image: url("saveHover.png");
-    }
-
     </style>
   </head>
   <body onload="main()">
@@ -77,7 +60,6 @@
       <canvas id="hud" width=500 height=500></canvas>
     </div>
 
-    <span id="save" onclick="saveGame()"></span>
     <span id="info" onclick="openPopup()">?</span>
     <div id="popup">
       <span id="close" onclick="closePopup()">&times;</span>

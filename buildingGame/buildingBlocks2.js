@@ -51,7 +51,7 @@ function loadTexture(url) {
 
 
 function main() {
-    window.game = new Engine(16, 2, 16);
+    window.game = new Engine(4, 2, 16);
 }
 
 function updateCamera(evt) {
