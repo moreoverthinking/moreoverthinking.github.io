@@ -5,12 +5,36 @@ body {
   overflow-x: hidden;
 }
 
+#bodyFade {
+  z-index: 1;
+  background-color: black;
+  opacity: 0%;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  margin: 0;
+  pointer-events: none;
+
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+@keyframes fadeIn {
+  0% {opacity: 50%;}
+  100% {opacity: 0%;}
+}
+@keyframes fadeOut {
+  0% {opacity: 0%;}
+  100% {opacity: 50%;}
+}
+
 #menuIcon {
   color: #F3F3F3;
   position: fixed;
   left: 25px;
   bottom: 25px;
-  z-index: 2;
+  z-index: 3;
 }
 #menuIcon div {
   width: 25px;
@@ -24,15 +48,16 @@ body {
 }
 
 @keyframes open {
-  0% {left: -200px; display: block;}
+  0% {left: -200px;}
   100% {left: 0px;}
 }
 @keyframes close {
   0% {left: 0px;}
-  100% {left: -200px; display: none;}
+  100% {left: -200px;}
 }
 #menuPopup {
   background-color: #242526;
+  border-radius: 0 50px 20px 0;
   position: fixed;
   top: 0;
   left: -200px;
@@ -40,7 +65,7 @@ body {
   height: 100%;
   animation-duration: 1s;
   animation-fill-mode: forwards;
-  z-index: 1;
+  z-index: 2;
 }
 #tabs {
   position: absolute;
