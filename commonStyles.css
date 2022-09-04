@@ -1,10 +1,42 @@
 body {
-  background-color: #040707;
+  background-color: #2c242bff;
+  background-image: url("art/bg.png");
   height: 100%;
   margin: 0;
   overflow-x: hidden;
+  color: #d5cbbaff;
 }
 
+@font-face {
+    font-family: ravenscroft;
+    src: url(Ravenscroft.ttf) format("truetype");
+    font-style: normal;
+}
+
+h1, h2 {
+  font-family: sans-serif;
+  margin: 0;
+}
+p {
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: #853556ff;
+}
+a:hover {
+  color: #de4f7eff;
+}
+
+@keyframes fadeIn {
+  0% {opacity: 50%;}
+  100% {opacity: 0%;}
+}
+@keyframes fadeOut {
+  0% {opacity: 0%;}
+  100% {opacity: 50%;}
+}
 #bodyFade {
   z-index: 1;
   background-color: black;
@@ -20,74 +52,62 @@ body {
   animation-duration: 1s;
   animation-fill-mode: forwards;
 }
-@keyframes fadeIn {
-  0% {opacity: 50%;}
-  100% {opacity: 0%;}
-}
-@keyframes fadeOut {
-  0% {opacity: 0%;}
-  100% {opacity: 50%;}
-}
 
 #menuIcon {
   color: #F3F3F3;
   position: fixed;
   left: 25px;
   bottom: 25px;
-  z-index: 3;
+  z-index: 2;
 }
 #menuIcon div {
   width: 25px;
   height: 5px;
   margin-bottom: 5px;
-  background-color: #F3F3F3;
+  background-color: #9b8e84ff;
   border-radius: 3px;
 }
-#menuIcon:hover div{
-  background-color: #6e6e6e;
+#menuIcon:hover div {
+  background-color: #d5cbbaff;
 }
 
 @keyframes open {
-  0% {left: -200px;}
+  0% {left: -206px;}
   100% {left: 0px;}
 }
 @keyframes close {
   0% {left: 0px;}
-  100% {left: -200px;}
+  100% {left: -206px;}
 }
 #menuPopup {
-  background-color: #242526;
-  border-radius: 0 50px 20px 0;
+  background-color: #2c242bff;
   position: fixed;
   top: 0;
-  left: -200px;
+  left: -206px;
   width: 200px;
-  height: 100%;
+  height: calc(100% - 6px);
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
-  z-index: 2;
+  z-index: 3;
+
+  border-color: #554a53ff;
+  border-left-color: #2c242bff;
+  border-style: solid;
+  border-width: medium;
+  border-radius: 0 50px 50px 0;
 }
 #tabs {
   position: absolute;
   top: 100px;
 }
 #tabs a {
-  color: #F3F3F3;
   font-size: 1em;
   font-family: sans-serif;
-  text-decoration: none;
   display: block;
   margin: 12px 40px;
 }
-#tabs a:hover {
-  cursor: pointer;
-  color: #62aca5;
-}
-#tabs a:link, a:visited {
-  color: #F3F3F3;
-}
 #tabs .selected {
-  color: #62aca5;
+  color: #de4f7eff;
 }
 #media {
   text-align: center;
@@ -98,6 +118,26 @@ body {
   margin: 0px 4px;
 }
 
+#webName {
+  position: absolute;
+  top: 60px;
+  left: 230px;
+
+  font-family: ravenscroft;
+  font-size: 2em;
+  color: #9b8e84ff;
+
+  text-align: center;
+
+  line-height: 30px;
+
+  overflow-x: visible;
+  overflow-y: hidden;
+  overflow-wrap: break-word;
+
+  width: 14px;
+  height: calc(100vh - 136px);
+}
 
 
 #backcanvas {
@@ -109,7 +149,6 @@ body {
 
 
 #info {
-  color: #F3F3F3;
   font-family: 'Volkhov', serif;
   font-size: 2em;
   position: fixed;
@@ -122,8 +161,8 @@ body {
   cursor: pointer;
 }
 #popup {
-  background-color: #040707;
-  border: #62aca5 solid;
+  background-color: #2c242bff;
+  border: #554a53ff solid;
   border-radius: 10px;
   padding: 10px;
   position: fixed;
@@ -132,7 +171,6 @@ body {
   display: none;
 }
 #close {
-  color: #F3F3F3;
   font-family: 'Volkhov', serif;
   font-size: 2em;
   position: absolute;
@@ -145,7 +183,6 @@ body {
   cursor: pointer;
 }
 #popuptext {
-  color: #F3F3F3;
   font-family: 'Volkhov', serif;
   text-align: center;
 }

@@ -55,7 +55,7 @@ class Camera {
 
     ctx.beginPath();
     ctx.arc(x2D + canvas.width/2, y2D + canvas.height/2, radius/nz * projectionPlaneDist, 0, 2 * Math.PI);
-    ctx.fillStyle = "#F3F3F3";
+    ctx.fillStyle = "#d5cbbaff";
     ctx.fill();
   }
 }

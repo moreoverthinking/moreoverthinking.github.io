@@ -6,7 +6,6 @@
     <meta name="keywords" content="hypnacedia, games">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home - Moreoverthinking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Volkhov&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="commonStyles.css">
     <style>
     /*#62aca5*/
@@ -17,24 +16,24 @@
     }
 
     .box {
-      background-color: #62aca5;
+      border-color: #853556ff;
+      border-style: solid;
+      border-width: medium;
+
       padding: 15px;
       margin: 20px 0;
       display: inline-block;
-      visibility: hidden;
+
+      opacity: 0;
     }
-    .box img {
-      visibility: visible;
-      box-shadow: 0px 0px 10px 3px black;
+    .box:hover {
+      border-color: #de4f7eff;
     }
 
-    .sectionTitle {
-      margin: 50px 10% 0 10%;
-      background-color: #242526;
-      padding: 20px 50px;
-      border-radius: 20px 50px;
-      color: #F3F3F3;
-      font-family: sans-serif;
+    .box img {
+      border-color: #3c333bff;
+      border-style: solid;
+      border-width: medium;
     }
 
     .sectionDescriptionBox {
@@ -42,23 +41,37 @@
       display: inline-block;
       max-width: 500px;
       padding: 10px;
-      margin: 20px 40px;
-      background-color: #242526;
+      margin: 20px 60px;
+
+      border-color: #554a53ff;
+      border-style: solid;
+      border-width: medium;
       border-radius: 20px 50px;
+      background-color: #2c242bff;
+
       vertical-align: top;
-      font-family: sans-serif;
       overflow: hidden;
     }
 
+    .sectionDescriptionBox a {
+      color: #853556ff;
+    }
+    .sectionDescriptionBox a:hover {
+      color: #de4f7eff;
+    }
+
     .sectionDescriptionBox p {
-      color: #F3F3F3;
       line-height: 1.5;
     }
 
-    .sectionDescriptionBox h1 {
-      color: #F3F3F3;
+    .titleImg {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 80px;
+      width: 75%;
+      max-width: 600px;
     }
-
 
     </style>
   </head>
@@ -70,13 +83,13 @@
       <div id="tabs">
         <a class="selected">Projects</a>
         <a href="about.html">About</a>
-        <a href="privacyPolicy.html">Privacy Policy</a>
       </div>
       <div id="media">
         <a href="https://moreoverthinking.itch.io/" target="_blank"><img src="logos/itchio.png" alt="Itch.io" height=32></img></a>
         <a href="https://twitter.com/Moreoverthink" target="_blank"><img src="logos/twitter.png" alt="Twitter" height=32></img></a>
         <a href="https://www.youtube.com/channel/UC6J0F6m2zIqY3KFGTMYyTFQ" target="_blank"><img src="logos/youtube.png" alt="Youtube" height=32></img></a>
       </div>
+      <div id="webName">M<br>O<br>R<br>E<br>O<br>V<br>E<br>R<br>T<br>H<br>I<br>N<br>K<br>I<br>N<br>G</div>
     </div>
     <div id="menuIcon" onclick="popup()">
       <div></div>
@@ -84,29 +97,30 @@
       <div></div>
     </div>
 
+    <img src="art/overeye.svg" class="titleImg"></img>
 
     <div class="selectionBox" style="direction: rtl;">
-      <a href="emptySpace/space.html"><div class="box"><img src="thumbnails/dotPicture.png" width=198 height=198></div></a>
+      <a href="projects/emptySpace/space.html"><div class="box"><img src="thumbnails/dotPicture.png" width=198 height=198></div></a>
       <div class="sectionDescriptionBox">
-        <h1>An Empty Page</h1>
+        <a href="emptySpace/space.html"><h2>An Empty Page</h2></a>
         <p>
           Frozen by the vastness of options, I placed a single dot in the center of the page. Once contrast was established, I could finally see the picture.
         </p>
       </div>
     </div>
     <div class="selectionBox">
-      <a href="buildingGame/buildingBlocks.html"><div class="box"><img src="thumbnails/buildingGamePicture.png" width=198 height=198></div></a>
+      <a href="projects/buildingGame/buildingBlocks.html"><div class="box"><img src="thumbnails/buildingGamePicture.png" width=198 height=198></div></a>
       <div class="sectionDescriptionBox">
-        <h1>Building Block Game</h1>
+        <a href="buildingGame/buildingBlocks.html"><h2>Building Blocks</h2></a>
         <p>
           Figuring out how 3D games and graphics are created has been an interest of mine for the longest time. I had been studying opengl when I decided to return to an earlier project where I made a garbage diy Minecraft. I basically remade the garbage diy Minecraft but this time using webgl and a local storage world saving system.
         </p>
       </div>
     </div>
     <div class="selectionBox" style="direction: rtl;">
-      <a href="abstractAsteroids/abstractAsteroids.html"><div class="box"><img src="thumbnails/Abstract.png" width=198 height=198></div></a>
+      <a href="projects/abstractAsteroids/abstractAsteroids.html"><div class="box"><img src="thumbnails/Abstract.png" width=198 height=198></div></a>
       <div class="sectionDescriptionBox">
-        <h1>Abstract Asteroids</h1>
+        <a href="abstractAsteroids/abstractAsteroids.html"><h2>Abstract Asteroids</h2></a>
         <p>
           It is a spin on the idea and structure of the original asteroids game. I wanted to make it so the geometric shapes were sliced instead of just being blown up.
         </p>
