@@ -5,6 +5,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   color: #d5cbbaff;
+  font-family: sans-serif;
 }
 
 @font-face {
@@ -58,7 +59,7 @@ a:hover {
   position: fixed;
   left: 25px;
   bottom: 25px;
-  z-index: 2;
+  z-index: 3;
 }
 #menuIcon div {
   width: 25px;
@@ -88,7 +89,7 @@ a:hover {
   height: calc(100% - 6px);
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
-  z-index: 3;
+  z-index: 2;
 
   border-color: #554a53ff;
   border-left-color: #2c242bff;
@@ -96,26 +97,22 @@ a:hover {
   border-width: medium;
   border-radius: 0 50px 50px 0;
 }
-#tabs {
-  position: absolute;
-  top: 100px;
+#menuPopup h3 {
+  margin: 24px;
+  margin-top: 64px;
 }
-#tabs a {
-  font-size: 1em;
-  font-family: sans-serif;
-  display: block;
-  margin: 12px 40px;
+
+.tab {
+  display: flex;
+  align-items:center;
+  margin: 24px;
 }
-#tabs .selected {
+.tab span {
+  margin-left: 10px;
+  font-weight: bold;
+}
+.selected {
   color: #de4f7eff;
-}
-#media {
-  text-align: center;
-  position: relative;
-  top: 32px;
-}
-#media img {
-  margin: 0px 4px;
 }
 
 #webName {
@@ -149,14 +146,18 @@ a:hover {
 
 
 #info {
-  font-family: 'Volkhov', serif;
-  font-size: 2em;
+  font-size: 3em;
+  font-weight: normal;
   position: fixed;
   right: 30px;
   bottom: 25px;
+  font-family: ravenscroft, sans-serif;
+  width: 40px;
+  text-align: center;
+  color: #9b8e84ff;
 }
 #info:hover, #info:focus {
-  color: #6e6e6e;
+  color: #d5cbbaff;
   text-decoration: none;
   cursor: pointer;
 }
@@ -171,19 +172,18 @@ a:hover {
   display: none;
 }
 #close {
-  font-family: 'Volkhov', serif;
   font-size: 2em;
   position: absolute;
   right: 5px;
   top: -5px;
+  color: #9b8e84ff;
 }
 #close:hover, #close:focus {
-  color: #6e6e6e;
+  color: #d5cbbaff;
   text-decoration: none;
   cursor: pointer;
 }
 #popuptext {
-  font-family: 'Volkhov', serif;
   text-align: center;
 }
 #popuptext p {
