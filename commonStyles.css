@@ -58,7 +58,7 @@ a:hover {
   color: #F3F3F3;
   position: fixed;
   left: 25px;
-  bottom: 25px;
+  top: 25px;
   z-index: 3;
 }
 #menuIcon div {
@@ -82,11 +82,13 @@ a:hover {
 }
 #menuPopup {
   background-color: #2c242bff;
+  background-image: url("art/bg.png");
   position: fixed;
   top: 0;
   left: -206px;
   width: 200px;
   height: calc(100% - 6px);
+
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
   z-index: 2;
@@ -117,7 +119,7 @@ a:hover {
 
 #webName {
   position: absolute;
-  top: 60px;
+  top: 100px;
   left: 230px;
 
   font-family: ravenscroft;
