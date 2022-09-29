@@ -138,6 +138,12 @@ a:hover {
   height: calc(100vh - 136px);
 }
 
+@media (max-width: 1050px) {
+  #webName {
+    visibility: hidden;
+  }
+}
+
 
 #backcanvas {
   position: fixed;
