@@ -522,8 +522,8 @@ class Engine {
 
         //creates shader program
         {
-            let vsSource = "precision mediump float; attribute vec4 aVertexPosition; attribute vec2 aTextureCoord; uniform vec3 uCameraPosition; uniform vec3 uCameraAngle; varying vec2 vTextureCoord; void main() {float x = aVertexPosition.x - uCameraPosition.x; float y = aVertexPosition.y - uCameraPosition.y; float z = aVertexPosition.z - uCameraPosition.z; float cosx = cos(uCameraAngle.x); float cosy = cos(uCameraAngle.y); float cosz = cos(uCameraAngle.z); float sinx = sin(uCameraAngle.x); float siny = sin(uCameraAngle.y); float sinz = sin(uCameraAngle.z); float xx = cosy * cosz; float xy = -cosy * sinz; float xz = siny; float yx = cosx * sinz + sinx * siny * cosz; float yy = cosx * cosz - sinx * siny * sinz; float yz = -sinx * cosy; float zx = sinx * sinz - cosx * siny * cosz; float zy = sinx * cosz + cosx * siny * sinz; float zz = cosx * cosy; float nx = x * xx + y * xy + z * xz; float ny = x * yx + y * yy + z * yz; float nz = x * zx + y * zy + z * zz; gl_Position = vec4(nx * 12.0, ny * 12.0, nz, 1.0 + nz * 10.0); vTextureCoord = aTextureCoord;}";
-            let fsSource = "precision mediump float; varying vec2 vTextureCoord; varying float vDepth; uniform sampler2D uSampler; void main() {gl_FragColor = texture2D(uSampler, vTextureCoord);}";
+            let vsSource = "precision mediump float; attribute vec4 aVertexPosition; attribute vec2 aTextureCoord; attribute vec3 aNormal; uniform vec3 uCameraPosition; uniform vec3 uCameraAngle; varying vec2 vTextureCoord; varying vec3 vNormal; void main() {float x = aVertexPosition.x - uCameraPosition.x; float y = aVertexPosition.y - uCameraPosition.y; float z = aVertexPosition.z - uCameraPosition.z; float cosx = cos(uCameraAngle.x); float cosy = cos(uCameraAngle.y); float cosz = cos(uCameraAngle.z); float sinx = sin(uCameraAngle.x); float siny = sin(uCameraAngle.y); float sinz = sin(uCameraAngle.z); float xx = cosy * cosz; float xy = -cosy * sinz; float xz = siny; float yx = cosx * sinz + sinx * siny * cosz; float yy = cosx * cosz - sinx * siny * sinz; float yz = -sinx * cosy; float zx = sinx * sinz - cosx * siny * cosz; float zy = sinx * cosz + cosx * siny * sinz; float zz = cosx * cosy; float nx = x * xx + y * xy + z * xz; float ny = x * yx + y * yy + z * yz; float nz = x * zx + y * zy + z * zz; gl_Position = vec4(nx * 12.0, ny * 12.0, nz, 1.0 + nz * 10.0); vTextureCoord = aTextureCoord; vNormal = aNormal;}";
+            let fsSource = "precision mediump float; varying vec2 vTextureCoord; varying vec3 vNormal; uniform sampler2D uSampler; void main() {float diff = max(dot(vNormal, vec3(0.5, 1.0, 0.25)), 0.0); gl_FragColor = texture2D(uSampler, vTextureCoord) * diff;}";
             let vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
             let fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
             this.shaderProgram = gl.createProgram();
@@ -546,9 +546,12 @@ class Engine {
         this.textureCoord = gl.getAttribLocation(this.shaderProgram, 'aTextureCoord');
         this.samplerUniform = gl.getUniformLocation(this.shaderProgram, 'uSampler');
 
+        //vertex normals
+        this.normalCoord = gl.getAttribLocation(this.shaderProgram, 'aNormal');
+
         this.positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, 4 * 5 * 36 * 100000, gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, 4 * 8 * 36 * 100000, gl.DYNAMIC_DRAW);
 
         //Loaded a small patch of chunks around the player at the start of the game
         /*
@@ -612,72 +615,72 @@ class Engine {
                 {
                   let bbf = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + bb.y + "_" + (bb.z - 1)];
                   if (!(typeof bbf !== 'undefined' && bbf.type > 0)) {
-                  this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.f4[0], tex.f4[1],
-                                   wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1],
-                                   wx, wy + this.blockSize, wz, tex.f1[0], tex.f1[1],
-                                   wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz, tex.f2[0], tex.f2[1],
-                                   wx, wy + this.blockSize, wz, tex.f1[0], tex.f1[1]
+                  this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.f4[0], tex.f4[1], 0.0, 0.0, 1.0,
+                                   wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1], 0.0, 0.0, 1.0,
+                                   wx, wy + this.blockSize, wz, tex.f1[0], tex.f1[1], 0.0, 0.0, 1.0,
+                                   wx + this.blockSize, wy, wz, tex.f3[0], tex.f3[1], 0.0, 0.0, 1.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz, tex.f2[0], tex.f2[1], 0.0, 0.0, 1.0,
+                                   wx, wy + this.blockSize, wz, tex.f1[0], tex.f1[1], 0.0, 0.0, 1.0
                                  );
                   }
                 }
                 {
                   let bbb = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + bb.y + "_" + (bb.z + 1)];
                   if (!(typeof bbb !== 'undefined' && bbb.type > 0)) {
-                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz + this.blockSize, tex.b3[0], tex.b3[1],
-                                   wx, wy + this.blockSize, wz + this.blockSize, tex.b2[0], tex.b2[1],
-                                   wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1],
-                                   wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1],
-                                   wx, wy + this.blockSize, wz + this.blockSize, tex.b2[0], tex.b2[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.b1[0], tex.b1[1]
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz + this.blockSize, tex.b3[0], tex.b3[1], 0.0, 0.0, -1.0,
+                                   wx, wy + this.blockSize, wz + this.blockSize, tex.b2[0], tex.b2[1], 0.0, 0.0, -1.0,
+                                   wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1], 0.0, 0.0, -1.0,
+                                   wx + this.blockSize, wy, wz + this.blockSize, tex.b4[0], tex.b4[1], 0.0, 0.0, -1.0,
+                                   wx, wy + this.blockSize, wz + this.blockSize, tex.b2[0], tex.b2[1], 0.0, 0.0, -1.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.b1[0], tex.b1[1], 0.0, 0.0, -1.0
                                  );
                   }
                 }
                 {
                   let bbl = this.world[cx + "_" + cy + "_" + cz].blocks[(bb.x - 1) + "_" + bb.y + "_" + bb.z];
                   if (!(typeof bbl !== 'undefined' && bbl.type > 0)) {
-                   this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.l3[0], tex.l3[1],
-                                   wx, wy  + this.blockSize, wz, tex.l2[0], tex.l2[1],
-                                   wx, wy, wz + this.blockSize, tex.l4[0], tex.l4[1],
-                                   wx, wy + this.blockSize, wz,  tex.l2[0], tex.l2[1],
-                                   wx, wy + this.blockSize, wz + this.blockSize, tex.l1[0], tex.l1[1],
-                                   wx, wy, wz + this.blockSize, tex.l4[0], tex.l4[1]
+                   this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.l3[0], tex.l3[1], -1.0, 0.0, 0.0,
+                                   wx, wy  + this.blockSize, wz, tex.l2[0], tex.l2[1], -1.0, 0.0, 0.0,
+                                   wx, wy, wz + this.blockSize, tex.l4[0], tex.l4[1], -1.0, 0.0, 0.0,
+                                   wx, wy + this.blockSize, wz,  tex.l2[0], tex.l2[1], -1.0, 0.0, 0.0,
+                                   wx, wy + this.blockSize, wz + this.blockSize, tex.l1[0], tex.l1[1], -1.0, 0.0, 0.0,
+                                   wx, wy, wz + this.blockSize, tex.l4[0], tex.l4[1], -1.0, 0.0, 0.0
                                  );
                   }
                 }
                 {
                   let bbr = this.world[cx + "_" + cy + "_" + cz].blocks[(bb.x + 1) + "_" + bb.y + "_" + bb.z];
                   if (!(typeof bbr !== 'undefined' && bbr.type > 0)) {
-                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx + this.blockSize, wy, wz,  tex.r4[0], tex.r4[1],
-                                   wx + this.blockSize, wy, wz + this.blockSize, tex.r3[0], tex.r3[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1],
-                                   wx + this.blockSize, wy, wz + this.blockSize, tex.r3[0], tex.r3[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.r2[0], tex.r2[1]
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx + this.blockSize, wy, wz,  tex.r4[0], tex.r4[1], 1.0, 0.0, 0.0,
+                                   wx + this.blockSize, wy, wz + this.blockSize, tex.r3[0], tex.r3[1], 1.0, 0.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1], 1.0, 0.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz, tex.r1[0], tex.r1[1], 1.0, 0.0, 0.0,
+                                   wx + this.blockSize, wy, wz + this.blockSize, tex.r3[0], tex.r3[1], 1.0, 0.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.r2[0], tex.r2[1], 1.0, 0.0, 0.0
                                  );
                   }
                 }
                 {
                   let bbt = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + (bb.y + 1) + "_" + bb.z];
                   if (!(typeof bbt !== 'undefined' && bbt.type > 0)) {
-                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy + this.blockSize, wz, tex.t4[0], tex.t4[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1],
-                                   wx, wy + this.blockSize, wz + this.blockSize, tex.t1[0], tex.t1[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1],
-                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.t2[0], tex.t2[1],
-                                   wx, wy + this.blockSize, wz + this.blockSize, tex.t1[0], tex.t1[1]
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy + this.blockSize, wz, tex.t4[0], tex.t4[1], 0.0, 1.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1], 0.0, 1.0, 0.0,
+                                   wx, wy + this.blockSize, wz + this.blockSize, tex.t1[0], tex.t1[1], 0.0, 1.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz, tex.t3[0], tex.t3[1], 0.0, 1.0, 0.0,
+                                   wx + this.blockSize, wy + this.blockSize, wz + this.blockSize, tex.t2[0], tex.t2[1], 0.0, 1.0, 0.0,
+                                   wx, wy + this.blockSize, wz + this.blockSize, tex.t1[0], tex.t1[1], 0.0, 1.0, 0.0
                                  );
                     }
                   }
                   {
                     let bbu = this.world[cx + "_" + cy + "_" + cz].blocks[bb.x + "_" + (bb.y - 1) + "_" + bb.z];
                     if (!(typeof bbu !== 'undefined' && bbu.type > 0)) {
-                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.u1[0], tex.u1[1],
-                                   wx, wy, wz + this.blockSize, tex.u4[0], tex.u4[1],
-                                   wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1],
-                                   wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1],
-                                   wx, wy, wz + this.blockSize, tex.u4[0], tex.u4[1],
-                                   wx + this.blockSize, wy, wz + this.blockSize, tex.u3[0], tex.u3[1]
+                    this.world[cx + "_" + cy + "_" + cz].vertexPos.push(wx, wy, wz, tex.u1[0], tex.u1[1], 0.0, -1.0, 0.0,
+                                   wx, wy, wz + this.blockSize, tex.u4[0], tex.u4[1], 0.0, -1.0, 0.0,
+                                   wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1], 0.0, -1.0, 0.0,
+                                   wx + this.blockSize, wy, wz, tex.u2[0], tex.u2[1], 0.0, -1.0, 0.0,
+                                   wx, wy, wz + this.blockSize, tex.u4[0], tex.u4[1], 0.0, -1.0, 0.0,
+                                   wx + this.blockSize, wy, wz + this.blockSize, tex.u3[0], tex.u3[1], 0.0, -1.0, 0.0
                                   );
                                 }
                   }
@@ -705,11 +708,14 @@ class Engine {
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.vertexAttribPointer(this.vertexPosition, 3, gl.FLOAT, false, 20, 0);
+        gl.vertexAttribPointer(this.vertexPosition, 3, gl.FLOAT, false, 32, 0);
         gl.enableVertexAttribArray(this.vertexPosition);
 
-        gl.vertexAttribPointer(this.textureCoord, 2, gl.FLOAT, false, 20, 12);
+        gl.vertexAttribPointer(this.textureCoord, 2, gl.FLOAT, false, 32, 12);
         gl.enableVertexAttribArray(this.textureCoord);
+
+        gl.vertexAttribPointer(this.normalCoord, 3, gl.FLOAT, false, 32, 20);
+        gl.enableVertexAttribArray(this.normalCoord);
 
         gl.useProgram(this.shaderProgram);
 
