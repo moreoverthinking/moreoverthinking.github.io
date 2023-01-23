@@ -8,17 +8,22 @@
     <link rel="stylesheet" href="commonStyles.css">
     <style>
       #message {
-        position: absolute;
-        left: 50%;
-        transform: translate(-50%, 0);
-        background-color: #242526;
-        color: #F3F3F3;
-        border-radius: 20px 50px;
-        margin-top: 100px;
-        padding: 20px 50px;
-        width: 30%;
+        position: relative;
+        left: 12%;
+        width: 72%;
+        margin: 48px 0;
+        padding: 48px 2%;
         font-family: sans-serif;
+
+        border-color: #554a53ff;
+        border-style: solid;
+        border-width: medium;
+        border-radius: 20px 50px;
+        background-color: #2c242bff;
       }
+
+
+
     </style>
   </head>
   <body>
@@ -31,10 +36,10 @@
         <img src="logos/project.svg" alt="project" height=32></img>
         <span>Projects</span>
       </a>
-      <div class="tab">
+      <a href="about.html" class="tab">
         <img src="logos/about.svg" alt="project" height=32></img>
-        <span class="selected">About</span>
-      </div>
+        <span>About</span>
+      </a>
 
       <h3>External</h3>
       <a href="https://moreoverthinking.itch.io/" target="_blank" class="tab">
@@ -59,8 +64,7 @@
     </div>
 
     <div id="message">
-      <h2>404</h2>
-      <h1>Page Not Found</h1>
+      <h1>404 Page Not Found</h1>
       <p>The specified file was not found on this website. Please check the URL for mistakes and try again.</p>
     </div>
     <script src="menuPopup.js"></script>
