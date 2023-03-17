@@ -9,8 +9,13 @@ initialize();
 function initialize() {
   window.addEventListener('resize', resizeCanvas, false);
   resizeCanvas();
-
-  setInterval(draw,0);
+    
+    draw();
+    window.addEventListener('scroll', draw);
+    for(let i = 0; i < boxes.length; i++) {
+        boxes[i].addEventListener('mouseenter', draw);
+        boxes[i].addEventListener('mouseout', draw);
+    }
 }
 
 function drawCube(x,y,w,h,l,vpx,vpy,bColor,img) {
@@ -113,7 +118,7 @@ function draw() {
   for (let i = 0; i < boxes.length; i++) {
     var rect = boxes[i].getBoundingClientRect();
     var boxStyle = getComputedStyle(boxes[i])
-    drawCube(rect.left,rect.top,boxes[i].offsetWidth,boxes[i].offsetHeight,0.85,width/2,height/2,boxStyle.borderColor,boxes[i].getElementsByTagName("img")[0]);
+    drawCube(rect.left,rect.top,boxes[i].offsetWidth,boxes[i].offsetHeight,0.9,width/2,height/2,boxStyle.borderColor,boxes[i].getElementsByTagName("img")[0]);
   }
 }
 
