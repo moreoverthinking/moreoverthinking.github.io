@@ -4,18 +4,18 @@ var boxes = document.getElementsByClassName("box");
 var bodyColor = window.getComputedStyle(document.body).backgroundColor;
 var last_known_scroll_position = 0;
 var ticking = false;
-initialize();
 
 function initialize() {
   window.addEventListener('resize', resizeCanvas, false);
   resizeCanvas();
     
-    draw();
     window.addEventListener('scroll', draw);
     for(let i = 0; i < boxes.length; i++) {
         boxes[i].addEventListener('mouseenter', draw);
         boxes[i].addEventListener('mouseout', draw);
     }
+    
+    draw();
 }
 
 function drawCube(x,y,w,h,l,vpx,vpy,bColor,img) {
@@ -128,3 +128,5 @@ function resizeCanvas() {
 
   draw();
 }
+
+initialize();
