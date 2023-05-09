@@ -508,6 +508,7 @@ class SketchPad {
     this.textout = textout;
 
     this.viewmode = 1;
+    this.lightmode = 1;
       
     //webgl setup for lighting viewmode 
     this.lightgl = lightgl;
@@ -524,6 +525,8 @@ class SketchPad {
     let colorAttributeLoc = this.gl.getAttribLocation(this.program, "a_color");
     this.resUniformLoc = this.gl.getUniformLocation(this.program, "u_res");
     this.lightUniformLoc = this.gl.getUniformLocation(this.program, "u_lightpos");
+    this.modeUniformLoc = this.gl.getUniformLocation(this.program, "u_mode");
+    this.dirUniformLoc = this.gl.getUniformLocation(this.program, "u_dir");
       
     this.buffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
@@ -551,8 +554,10 @@ class SketchPad {
       
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
     
-    this.gl.uniform3fv(this.lightUniformLoc, [document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0]);
-    this.gl.uniform2fv(this.resUniformLoc, [this.resX, this.resZ]);
+    this.gl.uniform3f(this.lightUniformLoc, document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0);
+    this.gl.uniform2f(this.resUniformLoc, this.resX, this.resZ);
+    this.gl.uniform2f(this.dirUniformLoc, 0.0, 0.0);
+    this.gl.uniform1f(this.modeUniformLoc, this.lightmode);
     this.gl.vertexAttribPointer(posAttributeLoc, 2, this.gl.FLOAT, false, 24, 0);
     this.gl.vertexAttribPointer(colorAttributeLoc, 4, this.gl.FLOAT, false, 24, 8);
     //end webgl
@@ -590,6 +595,11 @@ class SketchPad {
             document.getElementById("positionX").style.display = "block";
             document.getElementById("positionY").style.display = "block";
             document.getElementById("positionZ").style.display = "block";
+            document.getElementById("alpha").style.display = "block";
+            document.getElementById("beta").style.display = "block";
+            
+            document.getElementById("aa").step = 0.1;
+            document.getElementById("ba").step = 0.1;
             
             this.renderLightGL();
         }
@@ -599,15 +609,22 @@ class SketchPad {
             document.getElementById("brushes").style.display = "block";
             document.getElementById("lightsettings").style.display = "none";
             
-            document.getElementById("posX").value = 0;
-            document.getElementById("posY").value = 0;
-            document.getElementById("posZ").value = 0;
+            document.getElementById("aa").step = 0.1;
+            document.getElementById("ba").step = 0.1;
+            document.getElementById("aa").value = 0;
+            document.getElementById("ba").value = 0;
+            document.getElementById("aan").innerHTML = "0";
+            document.getElementById("ban").innerHTML = "0";
             
             toolChange();
         }
         
         //update viewmode
-        sketch.viewmode = mode;
+        this.viewmode = mode;
+    }
+    
+    setLightMode(mode) {
+        this.lightmode = mode;
     }
 
   setImageData(x, y, r, g, b, a) {
@@ -811,8 +828,10 @@ class SketchPad {
         
         this.gl.useProgram(this.program);
         
-        this.gl.uniform3fv(this.lightUniformLoc, [document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0]);
-        this.gl.uniform2fv(this.resUniformLoc, [this.resX, this.resZ]);
+        this.gl.uniform3f(this.lightUniformLoc, document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0);
+        this.gl.uniform2f(this.resUniformLoc, this.resX, this.resZ);
+        this.gl.uniform2f(this.dirUniformLoc, document.getElementById("aa").value * (Math.PI / 12), document.getElementById("ba").value * (Math.PI / 4));
+        this.gl.uniform1f(this.modeUniformLoc, this.lightmode);
         
         this.gl.drawArrays(this.gl.POINTS, 0, this.resX * this.resZ);
     }
@@ -949,6 +968,13 @@ function changeViewMode() {
   let mMode = document.getElementById("mMode");
   let rMode = document.getElementById("rMode");
   sketch.setViewMode(xzMode.checked * xzMode.value + yMode.checked * yMode.value + nMode.checked * nMode.value + mMode.checked * mMode.value + rMode.checked * rMode.value);
+}
+
+function changeLightMode() {
+    let dirMode = document.getElementById("dirLight");
+    let pointMode = document.getElementById("pointLight");
+    let spotMode = document.getElementById("spotLight");
+    sketch.setLightMode(dirMode.checked * dirMode.value + pointMode.checked * pointMode.value + spotMode.checked * spotMode.value);
 }
 
 function updateBrushSize(evt) {

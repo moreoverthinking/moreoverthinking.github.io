@@ -56,7 +56,14 @@
             #lightsettings {
                 display: none;
             }
-
+            
+            #aan, #ban {
+                display: inline-block;
+                max-width: 48px;
+                overflow: hidden;
+                vertical-align: middle;
+            }
+            
             #description {
                 margin-top: 0px;
             }
@@ -114,27 +121,27 @@
         <div class="toolbar">
             <h2>Sketch Settings</h2>
             <label for="resW">W</label>
-            <input type="number" name="resW" id="resW" size=4 min=0 max=128 value=64>
+            <input type="number" autocomplete="off" name="resW" id="resW" size=4 min=0 max=128 value=64>
             <label for="resH">H</label>
-            <input type="number" name="resH" id="resH" size=4 min=0 max=128 value=128>
+            <input type="number" autocomplete="off" name="resH" id="resH" size=4 min=0 max=128 value=128>
             <label for="resL">L</label>
-            <input type="number" name="resL" id="resL" size=4 min=0 max=128 value=64>
-            <input type="button" name="Apply" value="Apply" onclick="applySettings()">
+            <input type="number" autocomplete="off" name="resL" id="resL" size=4 min=0 max=128 value=64>
+            <input type="button" name="Apply" value="Reset " onclick="applySettings()">
             <h2>View Modes</h2>
             <label for="xzMode">XZ</label>
-            <input type="radio" name="viewMode" class="vm" id="xzMode" value=1 checked=true onclick="changeViewMode()">
+            <input type="radio" autocomplete="off" name="viewMode" class="vm" id="xzMode" value=1 checked=true onclick="changeViewMode()">
             <label for="yMode">Y</label>
-            <input type="radio" name="viewMode" class="vm" id="yMode" value=2 onclick="changeViewMode()">
+            <input type="radio" autocomplete="off" name="viewMode" class="vm" id="yMode" value=2 onclick="changeViewMode()">
             <label for="nMode">N</label>
-            <input type="radio" name="viewMode" class="vm" id="nMode" value=3 onclick="changeViewMode()">
+            <input type="radio" autocomplete="off" name="viewMode" class="vm" id="nMode" value=3 onclick="changeViewMode()">
             <label for="mMode">M</label>
-            <input type="radio" name="viewMode" class="vm" id="mMode" value=4 onclick="changeViewMode()">
+            <input type="radio" autocomplete="off" name="viewMode" class="vm" id="mMode" value=4 onclick="changeViewMode()">
             <label for="mMode">R</label>
-            <input type="radio" name="viewMode" class="vm" id="rMode" value=5 onclick="changeViewMode()">
+            <input type="radio" autocomplete="off" name="viewMode" class="vm" id="rMode" value=5 onclick="changeViewMode()">
             
             <div id="brushes">
                 <h2>Brushes and Tools</h2>
-                <select name="tools" id="tools" onchange="toolChange()">
+                <select autocomplete="off" name="tools" id="tools" onchange="toolChange()">
                     <option value=0>Flat Plane Brush</option>
                     <option value=1>Manuel Brush</option>
                     <option value=2>Towers</option>
@@ -145,6 +152,12 @@
             </div>
             <div id="lightsettings">
                 <h2>Lighting Settings</h2>
+                <label for="dirMode">D</label>
+                <input type="radio" autocomplete="off" name="lightMode" class="vm" id="dirLight" value=1 checked=true onclick="changeLightMode()">
+                <label for="pointMode">P</label>
+                <input type="radio" autocomplete="off" name="lightMode" class="vm" id="pointLight" value=2 onclick="changeLightMode()">
+                <label for="spotMode">S</label>
+                <input type="radio" autocomplete="off" name="lightMode" class="vm" id="spotLight" value=3 onclick="changeLightMode()">
             </div>
             <div id="modifiers">
                 <div id="brushSize">
@@ -186,7 +199,7 @@
             
             <h2>Export</h2>
             <input type="button" name="Generate Image" value="Generate Image" onclick="genFinalImage()"><br>
-            <canvas id="export" width="128" height="128"></canvas>
+            <canvas id="export" width="64" height="64"></canvas>
         </div>
         
         <canvas id="viewspace" width="768" height="768"></canvas>
@@ -223,11 +236,17 @@
         <script id="lightVertShader" type="notjs">#version 300 es
               in vec2 a_pos;
               in vec4 a_color;
+              
               uniform vec2 u_res;
               uniform vec3 u_lightpos;
+              uniform float u_mode;
+              uniform vec2 u_dir;
+              
               out vec4 v_color;
               out vec3 v_lightpos;
               out vec2 v_pos;
+              out vec2 v_dir;
+              out float v_mode;
 
               void main() {
                 vec2 shiftToLeft = a_pos + vec2(0.5, 0.5);
@@ -240,12 +259,17 @@
 
                 v_color = a_color;
                 v_lightpos = u_lightpos;
+                v_dir = u_dir;
+                v_mode = u_mode;
               }
         </script>
         <script id="lightFragShader" type="notjs">#version 300 es
               precision mediump float;
               in vec4 v_color;
               in vec3 v_lightpos;
+              in vec2 v_dir;
+              in float v_mode;
+              
               out vec4 outColor;
 
               void main() {
@@ -260,15 +284,35 @@
                 vec2 na = vec2(float(a & 31) * 0.2618, float((a & 224) >> 5) * 0.7854);
                 vec3 normal = vec3(sin(na.x) * cos(na.y), sin(na.y), cos(na.x) * cos(na.y));
                 
-                vec3 l_dir = normalize(v_lightpos - pix_pos);
-                vec4 light = vec4(0.0, 0.0, 0.0, 1.0);
-
-                float intensity = max(dot(normalize(normal), l_dir), 0.0);
-                float dist = distance(pix_pos, v_lightpos);
-                float attenuation = 1.0 / (1.0 + 0.07 * dist + 1.8 * (dist * dist));    
-                light = vec4(vec3(intensity * attenuation), 1.0);
+                vec3 light_vector = vec3(sin(v_dir.x) * cos(v_dir.y), sin(v_dir.y), cos(v_dir.x) * cos(v_dir.y));
                 
-                outColor = light;
+                float shade = 1.0;
+                vec3 l_dir = normalize(-light_vector);
+                
+                if (v_mode > 1.0) {
+                    l_dir = normalize(v_lightpos - pix_pos);
+                    
+                    float dist = distance(pix_pos, v_lightpos);
+                    float attenuation = 1.0 / (1.0 + 0.07 * dist + 1.8 * (dist * dist));
+                    
+                    shade *= attenuation;
+                    
+                    if (v_mode > 2.0) {
+                        float light_inner_cos = 0.921;
+                        float light_outer_cos = 0.878;
+                        float theta = dot(l_dir, normalize(-light_vector));
+                        float epsilon = light_inner_cos - light_outer_cos;
+                        float soften = clamp((theta - light_outer_cos) / epsilon, 0.0, 1.0);
+                        
+                        shade *= soften;
+                    }
+                }
+                
+                float intensity = max(dot(normalize(normal), l_dir), 0.0);
+                
+                shade *= intensity;
+                
+                outColor = vec4(vec3(shade), 1.0);
               }
         </script>
 
