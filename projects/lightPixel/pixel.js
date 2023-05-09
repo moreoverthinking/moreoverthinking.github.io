@@ -472,7 +472,7 @@ class TriConnector extends Tool {
 }
 
 class SketchPad {
-  constructor(canvas, textout, defaultTool, width, height, length) {
+  constructor(canvas, lightgl, textout, defaultTool, width, height, length) {
     let that = this;
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d", {antialias: false, premultipliedAlpha: false});
@@ -508,7 +508,55 @@ class SketchPad {
     this.textout = textout;
 
     this.viewmode = 1;
+      
+    //webgl setup for lighting viewmode 
+    this.lightgl = lightgl;
+    this.gl = this.lightgl.getContext("webgl2", {premultipliedAlpha: false});
+      
+    let vertexShaderSource = document.getElementById("lightVertShader").text;
+    let fragmentShaderSource = document.getElementById("lightFragShader").textContent;
+    let vertexShader = createShader(this.gl, this.gl.VERTEX_SHADER, vertexShaderSource);
+    let fragmentShader = createShader(this.gl, this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+      
+    this.program = createProgram(this.gl, vertexShader, fragmentShader);
+    
+    let posAttributeLoc = this.gl.getAttribLocation(this.program, "a_pos");
+    let colorAttributeLoc = this.gl.getAttribLocation(this.program, "a_color");
+    this.resUniformLoc = this.gl.getUniformLocation(this.program, "u_res");
+    this.lightUniformLoc = this.gl.getUniformLocation(this.program, "u_lightpos");
+      
+    this.buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+    var arr = [];
+    for (let pz = 0.0; pz < 128; pz += 1.0) {
+        for (let px = 0.0; px < 128; px += 1.0) {
+            arr.push(px);
+            arr.push(pz);
 
+            arr.push(1.0);
+            arr.push(1.0);
+            arr.push(1.0);
+            arr.push(1.0);
+        }
+    }
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(arr), this.gl.DYNAMIC_DRAW);
+      
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.gl.clearColor(0, 0, 0, 0);
+      
+    this.gl.useProgram(this.program);
+      
+    this.gl.enableVertexAttribArray(posAttributeLoc);
+    this.gl.enableVertexAttribArray(colorAttributeLoc);
+      
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+    
+    this.gl.uniform3fv(this.lightUniformLoc, [document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0]);
+    this.gl.uniform2fv(this.resUniformLoc, [this.resX, this.resZ]);
+    this.gl.vertexAttribPointer(posAttributeLoc, 2, this.gl.FLOAT, false, 24, 0);
+    this.gl.vertexAttribPointer(colorAttributeLoc, 4, this.gl.FLOAT, false, 24, 8);
+    //end webgl
+      
     this.interval = setInterval(function(){that.sketchRefresh();}, 0);
   }
 
@@ -526,6 +574,41 @@ class SketchPad {
       this.imgData[i + 3] = 0;  // A value
     }
   }
+    
+    setViewMode(mode) {
+        //light renderer swap
+        if (sketch.viewmode != 5 && mode == 5) {
+            this.canvas.style.display = "none";
+            this.lightgl.style.display = "block";
+            document.getElementById("brushes").style.display = "none";
+            document.getElementById("lightsettings").style.display = "block";
+            
+            let modifiers = document.getElementById("modifiers");
+            for (const child of modifiers.children) {
+                child.style.display = "none";
+            }
+            document.getElementById("positionX").style.display = "block";
+            document.getElementById("positionY").style.display = "block";
+            document.getElementById("positionZ").style.display = "block";
+            
+            this.renderLightGL();
+        }
+        else if (sketch.viewmode == 5 && mode != 5) {
+            this.canvas.style.display = "block";
+            this.lightgl.style.display = "none";
+            document.getElementById("brushes").style.display = "block";
+            document.getElementById("lightsettings").style.display = "none";
+            
+            document.getElementById("posX").value = 0;
+            document.getElementById("posY").value = 0;
+            document.getElementById("posZ").value = 0;
+            
+            toolChange();
+        }
+        
+        //update viewmode
+        sketch.viewmode = mode;
+    }
 
   setImageData(x, y, r, g, b, a) {
     if (x < 0 || y < 0 || x >= this.resX || y >= this.resZ) {
@@ -552,6 +635,7 @@ class SketchPad {
     if (!output) {
       return
     }
+      
     for (let i = 0; i < output.length; i++) {
       this.setImageData(output[i].x, output[i].y, output[i].r, output[i].g, output[i].b, output[i].a);
     }
@@ -657,7 +741,6 @@ class SketchPad {
       this.ctx.strokeRect(s.x, s.y, w * this.zoom, h * this.zoom);
     }
   }
-
   renderFilteredImgData() {
     for (let py = 0; py < this.resZ; py++) {
       for (let px = 0; px < this.resX; px++) {
@@ -704,25 +787,66 @@ class SketchPad {
     this.ctx.strokeStyle = "white";
     this.renderRect(g.x * this.pixelS, g.y * this.pixelS, d, d, this.click[0]);
   }
+    
+    renderLightGL() {
+        var arr = [];
+        let i = 0;
+        for (let pz = 0.0; pz < this.resZ; pz += 1.0) {
+            for (let px = 0.0; px < this.resX; px += 1.0) {
+                arr.push(px);
+                arr.push(pz);
+
+                arr.push(this.imgData[i + 0] / 255.0);
+                arr.push(this.imgData[i + 1] / 255.0);
+                arr.push(this.imgData[i + 2] / 255.0);
+                arr.push(this.imgData[i + 3] / 255.0);
+
+                i += 4;
+            }
+        }
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(arr));
+        
+         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        
+        this.gl.useProgram(this.program);
+        
+        this.gl.uniform3fv(this.lightUniformLoc, [document.getElementById("posX").value / 127.0, document.getElementById("posY").value / 127.0, document.getElementById("posZ").value / 127.0]);
+        this.gl.uniform2fv(this.resUniformLoc, [this.resX, this.resZ]);
+        
+        this.gl.drawArrays(this.gl.POINTS, 0, this.resX * this.resZ);
+    }
+    
   sketchRefresh() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //clears screen
+    if (this.viewmode == 5) {
+        this.renderLightGL();
+    }
+    else {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //clears screen
 
-    this.renderFilteredImgData();
+        this.renderFilteredImgData();
 
-    this.ctx.strokeStyle = "white";
-    this.renderRect(0, 0, this.resX * this.pixelS, this.resZ * this.pixelS, false); //draws sketch frame
+        this.ctx.strokeStyle = "white";
+        this.renderRect(0, 0, this.resX * this.pixelS, this.resZ * this.pixelS, false); //draws sketch frame
 
-    this.renderToolCursor();
+        this.renderToolCursor();
+    }
   }
 
 }
 
-var sketch = new SketchPad(document.getElementById("viewspace"), document.getElementById("readout"), new FlatPlaneBrush(0, 0), 128, 128, 128);
+var sketch = new SketchPad(document.getElementById("viewspace"), document.getElementById("lightgl"), document.getElementById("readout"), new FlatPlaneBrush(0, 0), 64, 128, 64);
 
 function applySettings() {
-  let w = document.getElementById("resW").value;
-  let h = document.getElementById("resH").value;
-  let l = document.getElementById("resL").value;
+  let rw = document.getElementById("resW");
+  let rh = document.getElementById("resH");
+  let rl = document.getElementById("resL");
+  rw.value = Math.min(Math.max(rw.value, rw.min), rw.max);
+  rh.value = Math.min(Math.max(rh.value, rh.min), rh.max);
+  rl.value = Math.min(Math.max(rl.value, rl.min), rl.max);
+  let w = rw.value;
+  let h = rh.value;
+  let l = rl.value;
   sketch.setSettings(w, h, l);
 
   let expt = document.getElementById("export");
@@ -823,7 +947,8 @@ function changeViewMode() {
   let yMode = document.getElementById("yMode");
   let nMode = document.getElementById("nMode");
   let mMode = document.getElementById("mMode");
-  sketch.viewmode = xzMode.checked * xzMode.value + yMode.checked * yMode.value + nMode.checked * nMode.value + mMode.checked * mMode.value;
+  let rMode = document.getElementById("rMode");
+  sketch.setViewMode(xzMode.checked * xzMode.value + yMode.checked * yMode.value + nMode.checked * nMode.value + mMode.checked * mMode.value + rMode.checked * rMode.value);
 }
 
 function updateBrushSize(evt) {

@@ -7,33 +7,54 @@
         <title>Pixel Data Embedder</title>
         <style>
             .toolbar {
-                background-color: #2c242bff;
+                background-color: #00000066;
+                color: white;
                 width: 336px;
-                height: 824px;
+                height: 744px;
                 padding: 12px 24px;
                 line-height: 32px;
                 display: inline-block;
-                border: medium solid #554a53ff;
-                border-radius: 24px;
+                border: 4px solid #554a53ff;
+
                 position: fixed;
-                left: 1000px;
-                top: 24px;
+                left: 924px;
+                top: 48px;
             }
 
             .toolbar h2 {
-                margin-bottom: 8px;
+                margin-top: 16px;
+            }
+            
+            .vm {
+                margin-right: 16px;
             }
 
-            .sketch {
+            #viewspace {
                 background-color: black;
-                width: min-content;
-                padding: 12px;
-                margin: 24px;
-                display: inline-block;
                 border: 4px solid #554a53ff;
+                
                 position: fixed;
-                left: 128px;
-                top: 24px;
+                left: 152px;
+                top: 48px;
+                
+                display: block;
+            }
+            
+            #lightgl {
+                 border: 4px solid #554a53ff;
+                
+                position: fixed;
+                left: 152px;
+                top: 48px;
+                
+                display: none;
+            }
+            
+            #brushes {
+                display: block;
+            }
+            #lightsettings {
+                display: none;
             }
 
             #description {
@@ -49,7 +70,7 @@
                 color: white;
                 position: fixed;
                 left: 224px;
-                top: 856px;
+                top: 830px;
             }
         </style>
     </head>
@@ -93,50 +114,58 @@
         <div class="toolbar">
             <h2>Sketch Settings</h2>
             <label for="resW">W</label>
-            <input type="number" name="resW" id="resW" min=0 max=128 value=128>
+            <input type="number" name="resW" id="resW" size=4 min=0 max=128 value=64>
             <label for="resH">H</label>
-            <input type="number" name="resH" id="resH" min=0 max=128 value=128>
+            <input type="number" name="resH" id="resH" size=4 min=0 max=128 value=128>
             <label for="resL">L</label>
-            <input type="number" name="resL" id="resL" min=0 max=128 value=128>
+            <input type="number" name="resL" id="resL" size=4 min=0 max=128 value=64>
             <input type="button" name="Apply" value="Apply" onclick="applySettings()">
             <h2>View Modes</h2>
             <label for="xzMode">XZ</label>
-            <input type="radio" name="viewMode" id="xzMode" value=1 checked=true onclick="changeViewMode()">
+            <input type="radio" name="viewMode" class="vm" id="xzMode" value=1 checked=true onclick="changeViewMode()">
             <label for="yMode">Y</label>
-            <input type="radio" name="viewMode" id="yMode" value=2 onclick="changeViewMode()">
+            <input type="radio" name="viewMode" class="vm" id="yMode" value=2 onclick="changeViewMode()">
             <label for="nMode">N</label>
-            <input type="radio" name="viewMode" id="nMode" value=3 onclick="changeViewMode()">
+            <input type="radio" name="viewMode" class="vm" id="nMode" value=3 onclick="changeViewMode()">
             <label for="mMode">M</label>
-            <input type="radio" name="viewMode" id="mMode" value=4 onclick="changeViewMode()">
-            <h2>Brushes and Tools</h2>
-            <select name="tools" id="tools" onchange="toolChange()">
-                <option value=0>Flat Plane Brush</option>
-                <option value=1>Manuel Brush</option>
-                <option value=2>Towers</option>
-                <option value=3>Line Connector</option>
-                <option value=4>Tri Connector</option>
-            </select>
-            <p id="description"><p>
+            <input type="radio" name="viewMode" class="vm" id="mMode" value=4 onclick="changeViewMode()">
+            <label for="mMode">R</label>
+            <input type="radio" name="viewMode" class="vm" id="rMode" value=5 onclick="changeViewMode()">
+            
+            <div id="brushes">
+                <h2>Brushes and Tools</h2>
+                <select name="tools" id="tools" onchange="toolChange()">
+                    <option value=0>Flat Plane Brush</option>
+                    <option value=1>Manuel Brush</option>
+                    <option value=2>Towers</option>
+                    <option value=3>Line Connector</option>
+                    <option value=4>Tri Connector</option>
+                </select>
+                <p id="description"><p>
+            </div>
+            <div id="lightsettings">
+                <h2>Lighting Settings</h2>
+            </div>
             <div id="modifiers">
                 <div id="brushSize">
                     <label for="bs">Brush Size</label>
                     <input type="range" name="bs" id="bs" min=0.5 max=16 step=0.5 value=0.5>
-                    <input type="number" name="bsn" id="bsn" min=0.5 max=16 step=0.5 value=0.5>
+                    <input type="number" name="bsn" id="bsn" size=4 min=0.5 max=16 step=0.5 value=0.5>
                 </div>
                 <div id="positionX">
                     <label for="posX">Position X</label>
-                    <input type="range" name="posX" id="posX" min=0 max=127 step=1 value=0>
-                    <input type="number" name="pxn" id="pxn" min=0 max=127 value=0>
+                    <input type="range" name="posX" id="posX" min=0 max=63 step=1 value=0>
+                    <input type="number" name="pxn" id="pxn" size=4 min=0 max=63 value=0>
                 </div>
                 <div id="positionY">
                     <label for="posY">Position Y</label>
                     <input type="range" name="posY" id="posY" min=0 max=127 step=1 value=0>
-                    <input type="number" name="pyn" id="pyn" min=0 max=127 value=0>
+                    <input type="number" name="pyn" id="pyn" size=4 min=0 max=127 value=0>
                 </div>
                 <div id="positionZ">
                     <label for="posZ">Position Z</label>
-                    <input type="range" name="posZ" id="posZ" min=0 max=127 step=1 value=0>
-                    <input type="number" name="pzn" id="pzn" min=0 max=127 value=0>
+                    <input type="range" name="posZ" id="posZ" min=0 max=63 step=1 value=0>
+                    <input type="number" name="pzn" id="pzn" size=4 min=0 max=63 value=0>
                 </div>
                 <div id="alpha">
                     <label for="aa">Angle H</label>
@@ -151,17 +180,18 @@
                 <div id="material">
                     <label for="m">Material</label>
                     <input type="range" name="m" id="m" min=0 max=7 step=1 value=0>
-                    <input type="number" name="mn" id="mn" min=0 max=7 step=1 value=0>
+                    <input type="number" name="mn" id="mn" size=4 min=0 max=7 step=1 value=0>
                 </div>
             </div>
+            
             <h2>Export</h2>
             <input type="button" name="Generate Image" value="Generate Image" onclick="genFinalImage()"><br>
             <canvas id="export" width="128" height="128"></canvas>
         </div>
+        
+        <canvas id="viewspace" width="768" height="768"></canvas>
+        <canvas id="lightgl" width="768" height="768"></canvas>
 
-        <div class="sketch">
-            <canvas id="viewspace" width="768" height="768"></canvas>
-        </div>
         <pre id="readout"></pre>
 
         <script id="gridVertShader" type="notjs">
@@ -190,7 +220,60 @@
                 gl_FragColor = v_color;
               }
         </script>
+        <script id="lightVertShader" type="notjs">#version 300 es
+              in vec2 a_pos;
+              in vec4 a_color;
+              uniform vec2 u_res;
+              uniform vec3 u_lightpos;
+              out vec4 v_color;
+              out vec3 v_lightpos;
+              out vec2 v_pos;
+
+              void main() {
+                vec2 shiftToLeft = a_pos + vec2(0.5, 0.5);
+                vec2 zeroToOne = shiftToLeft / u_res;
+                vec2 zeroToTwo = zeroToOne * 2.0;
+                vec2 clipSpace = zeroToTwo - 1.0;
+
+                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+                gl_PointSize = 768.0 / u_res.x;
+
+                v_color = a_color;
+                v_lightpos = u_lightpos;
+              }
+        </script>
+        <script id="lightFragShader" type="notjs">#version 300 es
+              precision mediump float;
+              in vec4 v_color;
+              in vec3 v_lightpos;
+              out vec4 outColor;
+
+              void main() {
+                int r = int(v_color.r * 255.0);
+                int g = int(v_color.g * 255.0);
+                int b = int(v_color.b * 255.0);
+                int a = int(v_color.a * 255.0);
+
+                float material = float(((r & 128) >> 7) | ((g & 128) >> 6) | ((b & 128) >> 5));
+
+                vec3 pix_pos = vec3(float(r & 127) / 127.0, float(g & 127) / 127.0, float(b & 127) / 127.0);
+                vec2 na = vec2(float(a & 31) * 0.2618, float((a & 224) >> 5) * 0.7854);
+                vec3 normal = vec3(sin(na.x) * cos(na.y), sin(na.y), cos(na.x) * cos(na.y));
+                
+                vec3 l_dir = normalize(v_lightpos - pix_pos);
+                vec4 light = vec4(0.0, 0.0, 0.0, 1.0);
+
+                float intensity = max(dot(normalize(normal), l_dir), 0.0);
+                float dist = distance(pix_pos, v_lightpos);
+                float attenuation = 1.0 / (1.0 + 0.07 * dist + 1.8 * (dist * dist));    
+                light = vec4(vec3(intensity * attenuation), 1.0);
+                
+                outColor = light;
+              }
+        </script>
+
         <script src="pixel.js" type="text/javascript"></script>
+
         <script src="/menuPopup.js"></script>
     </body>
 </html>

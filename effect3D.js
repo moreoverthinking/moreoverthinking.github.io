@@ -128,5 +128,3 @@ function resizeCanvas() {
 
   draw();
 }
-
-initialize();
