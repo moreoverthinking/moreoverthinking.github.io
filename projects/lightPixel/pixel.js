@@ -612,8 +612,8 @@ class SketchPad {
             document.getElementById("brushes").style.display = "block";
             document.getElementById("lightsettings").style.display = "none";
             
-            document.getElementById("aa").step = 0.1;
-            document.getElementById("ba").step = 0.1;
+            document.getElementById("aa").step = 1;
+            document.getElementById("ba").step = 1;
             document.getElementById("aa").value = 0;
             document.getElementById("ba").value = 0;
             document.getElementById("aan").innerHTML = "0";
